@@ -9,7 +9,7 @@ public class Nested1 {
                 System.out.println("-> 내부 for " + i + "-" + j);
             }
             System.out.println("외부 for 종료 i:" + i);
-            System.out.println();
+            System.out.println(); //라인 구분
         }
     }
 }
