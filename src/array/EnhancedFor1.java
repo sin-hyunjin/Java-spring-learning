@@ -21,7 +21,7 @@ public class EnhancedFor1 {
         for (int number : numbers) {
             System.out.println(number);
         }
-ㄴ
+
         //향상된 for문에는 증가하는 인덱스 값이 감추어져 있다.
         //for-each문을 사용할 수 없는 경우, 증가하는 index 값 필요
         for (int i = 0; i < numbers.length; i++) {
