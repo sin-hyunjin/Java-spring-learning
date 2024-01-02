@@ -1,12 +1,28 @@
 # 목차
 
-## 1.Hello World 
+### 1.Hello World 
 
-- [개발 환경 설정](intelli j를 통한 자바 컴파일 과정 )
-- [주석(comment)]([CommentJava.java](src%2FCommentJava.java))
+- [개발 환경 설정](#intelli-j를-통한-자바-컴파일-과정-)
+- [주석(Comment)](src%2FCommentJava.java)
+- [자바란?](#자바란-)
 
+### 2. [변수(variable)](src%2Fvariable)
 
+### 3. [연산자(Operater)](src%2Foperator)
+
+### 4. [조건문(cond)](src%2Fcond)
+
+### 5.  [반복문(loop)](src%2Floop)
+
+### 6. [스코프,형변환(scope)](src%2Fscope)
+
+### 7. [scanner(사용자입력)](src%2Fscanner)
+
+### 8. [배열(array)](src%2Farray)
+
+### 9. [메서드(method)](src%2Fmethod)
 # 자바란? 
+
 
 자바 표준 스펙과 구현 
 
