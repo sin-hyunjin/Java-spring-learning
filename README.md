@@ -21,6 +21,40 @@
 ### 8. [배열(array)](src%2Farray)
 
 ### 9. [메서드(method)](src%2Fmethod)
+
+# 개발환경설정 
+
+### 인텔리제이(IntelliJ) 설치하기
+
+- 다운로드 링크:  https://www.jetbrains.com/ko-kr/idea/download
+- **IntelliJ IDEA Community Edition (무료 버전)** 
+- - OS 선택: Windows, macOs, Linux
+    - Windows: `.exe` 선택
+    - macOs: M1, M2: Apple Silicon 선택, 나머지: Intel 선택
+
+인텔리제이 실행하기
+
+**New Project**
+
+<img width="678" alt="image" src="https://github.com/sin-hyunjin/JAVA-IntroductoryClass/assets/116487398/e857afc9-18b1-4580-9282-5beeb9673b0b">
+
+ New Project를 선택해서 새로운 프로젝트를 만들자
+
+ 
+**New Project 화면** 
+- Name: java-start
+- Location: 프로젝트 위치, 임의 선택
+- Create Git repository 선택하지 않음
+- Language: Java
+- Build system: IntelliJ
+- JDK: 자바 버전 17 이상
+- `Add sample code` 선택
+- 
+**JDK 다운로드 화면 이동 방법**
+자바로 개발하기 위해서는 JDK가 필요하다. JDK는 자바 프로그래머를 위한 도구 + 자바 실행 프로그램의 묶음이다.
+ 
+
+
 # 자바란? 
 
 
