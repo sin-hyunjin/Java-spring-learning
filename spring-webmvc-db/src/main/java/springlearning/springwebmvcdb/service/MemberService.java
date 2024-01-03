@@ -4,6 +4,7 @@
  */
 package springlearning.springwebmvcdb.service;
 
+import org.springframework.stereotype.Service;
 import springlearning.springwebmvcdb.domain.Member;
 import springlearning.springwebmvcdb.repository.MemberRepository;
 import springlearning.springwebmvcdb.repository.MemoryMemberRepository;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 // cmd + shift + t 를 하면 테스트 케이스 자동으로 만들어짐
+
 public class MemberService {
     // 서비스를 만들기위해 리포지토리가 필요
     private final MemberRepository memberRepository;
