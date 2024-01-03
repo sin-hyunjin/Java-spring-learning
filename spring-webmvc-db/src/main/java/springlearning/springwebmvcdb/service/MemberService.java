@@ -14,6 +14,7 @@ import java.util.Optional;
 
 // cmd + shift + t 를 하면 테스트 케이스 자동으로 만들어짐
 
+@Service
 public class MemberService {
     // 서비스를 만들기위해 리포지토리가 필요
     private final MemberRepository memberRepository;

@@ -6,7 +6,7 @@ import springlearning.springwebmvcdb.domain.Member;
 import java.util.*;
 
 // implements 로 MemberRepository를 가져옴 ( option + enter )
-//@Repository // component scan 방식
+@Repository // component scan 방식
 public class MemoryMemberRepository implements MemberRepository {
 
     private static Map<Long, Member> store = new HashMap<>();
