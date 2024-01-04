@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import springlearning.springwebmvcdb.domain.Member;
 import springlearning.springwebmvcdb.service.MemberService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Controller // 컨트롤러 애노테이션이 있으면 스프링이 뜰 때 동작을한다.
@@ -35,7 +36,7 @@ public class MemberController {
 
     @PostMapping("/members/new")
     // 2. 회원가입 데이터가 들어올 곳
-    public String create(MemberForm form) { //MemberForm에서 name값을 찾아옴
+    public String create(MemberForm form) throws SQLException { //MemberForm에서 name값을 찾아옴
         Member member = new Member();
         member.setName(form.getName());
 

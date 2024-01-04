@@ -7,12 +7,13 @@ package springlearning.springwebmvcdb.repository;
 import org.springframework.stereotype.Repository;
 import springlearning.springwebmvcdb.domain.Member;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 
 public interface MemberRepository {
-    Member save(Member member); // 회원이 저장소에 저장
+    Member save(Member member) throws SQLException; // 회원이 저장소에 저장
     // null값이 예측된다면 optional<> 감싼다
     Optional<Member> findById(Long id);
     Optional<Member> findByName(String name);
