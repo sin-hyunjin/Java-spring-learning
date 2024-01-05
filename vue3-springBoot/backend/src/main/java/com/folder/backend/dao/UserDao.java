@@ -1,5 +1,6 @@
 package com.folder.backend.dao;
 
+import com.folder.backend.dto.ResultDTO;
 import com.folder.backend.dto.UserDTO;
 
 import java.util.List;
@@ -12,5 +13,5 @@ public interface UserDao {
     public int editById(UserDTO uDto);
     public int delete(int no);
 
-    public int save(UserDTO uDto);
+    public ResultDTO save(UserDTO uDto);
 }

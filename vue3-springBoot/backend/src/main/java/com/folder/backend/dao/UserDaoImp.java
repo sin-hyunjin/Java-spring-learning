@@ -1,5 +1,6 @@
 package com.folder.backend.dao;
 
+import com.folder.backend.dto.ResultDTO;
 import com.folder.backend.dto.UserDTO;
 import com.folder.backend.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +23,28 @@ public class UserDaoImp implements UserDao{
 
     @Override
     public int editById(UserDTO uDto) {
-        return 0;
+        return userMapper.editById(uDto);
     }
 
     @Override
     public int delete(int no) {
-        return 0;
+        return userMapper.delete(no);
     }
 
+
+
     @Override
-    public int save(UserDTO uDto) {
-        return 0;
+    public ResultDTO save(UserDTO uDto){
+        ResultDTO result = new ResultDTO();
+        int state = userMapper.save(uDto);
+        if(state == 1) {
+            System.out.println(uDto);
+            result.setState(true);
+            result.setResult(uDto);
+        } else {
+            result.setState(false);
+        }
+        return result;
     }
+
 }

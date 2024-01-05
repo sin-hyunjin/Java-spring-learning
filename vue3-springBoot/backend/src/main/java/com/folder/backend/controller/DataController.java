@@ -1,6 +1,7 @@
 package com.folder.backend.controller;
 
 import com.folder.backend.dto.ResultDTO;
+import com.folder.backend.dto.UserDTO;
 import com.folder.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,18 +33,18 @@ public class DataController {
 
     // 업데이트  UpdateView.vue "/user/editById"
     @PostMapping("/editById")
-    public ResultDTO editById() {
-        return null;
+    public ResultDTO editById(@RequestBody UserDTO uDto) {
+        System.out.println("uDto = " + uDto);
+        return uService.editById(uDto);
     }
     // 사용자 정보 삭제
     @DeleteMapping("/delete")
-    public ResultDTO delete() {
-        return null;
+    public ResultDTO delete(@RequestParam("no") int no){
+        return uService.delete(no);
     }
-
     // 사용자 정보 등록 CreateView.vue "/user/save"
     @PutMapping("/save")
-    public ResultDTO save() {
-        return null;
+    public ResultDTO save(@RequestBody  UserDTO uDto) {
+        return uService.save(uDto);
     }
 }

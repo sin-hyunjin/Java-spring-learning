@@ -8,6 +8,16 @@
 
 <script>
 import axios from "axios";
+const uForm = {
+  no: 1,
+  name: "test",
+  email: "test@test.com",
+  pwd: "1234",
+  gender: true,
+};
+const params = {
+  params: { no: 1 },
+};
 export default {
   name: "HomeView",
   /** methods axios 호출
@@ -19,7 +29,7 @@ export default {
     getData() {
       // 메서드 이름을 getDate에서 getData로 수정
       axios
-        .post("http://localhost:8080/findAll", {})
+        .delete("http://localhost:8080/delete", params)
         .then((res) => {
           console.log(res);
         })

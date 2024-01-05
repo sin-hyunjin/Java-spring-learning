@@ -2,6 +2,7 @@ package com.folder.backend.mapper;
 
 import com.folder.backend.dto.UserDTO;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.mapping.StatementType;
 
 import java.util.List;
 
@@ -16,4 +17,11 @@ public interface UserMapper {
 
     @Update("update user3 set del = true where no = #{no}")
     public int delete(int no);
+
+    @SelectKey(statementType = StatementType.PREPARED, statement = "select last_insert_id() as no", keyProperty = "no", before = false, resultType = int.class)
+    @Insert("insert into user3 (name, email, pwd, gender) value (#{name},#{email},#{pwd},#{gender})")
+    public int save(UserDTO uDto);
+
+
+
 }
