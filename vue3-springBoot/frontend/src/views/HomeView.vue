@@ -7,32 +7,32 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios'
 const uForm = {
   no: 1,
-  name: "테스트",
-  email: "test@email.com",
-  pwd: "1234",
-  gender: true,
-};
+  name: '테스트',
+  email: 'test@email.com',
+  pwd: '1234',
+  gender: true
+}
 const params = {
-  params: { no: 1 },
-};
+  params: { no: 1 }
+}
 export default {
-  name: "HomeView",
+  name: 'HomeView',
   methods: {
     getData() {
       axios
-        .post("http://localhost:8080/findAll")
+        .post('http://localhost:8080/findAll')
         .then((response) => {
-          console.log(response);
+          console.log(response)
         })
         .catch((error) => {
-          console.log(error);
-        });
-    },
-  },
-};
+          console.log(error)
+        })
+    }
+  }
+}
 </script>
 
 <style scoped>
