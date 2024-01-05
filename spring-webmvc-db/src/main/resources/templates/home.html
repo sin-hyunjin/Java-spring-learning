@@ -1,12 +1,42 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
+
+<style>
+    .container {
+    border: 1px solid black;
+    padding: 20px;
+    margin: 20px;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    color: #333;
+}
+
+p {
+    color: #666;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+    margin-right: 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+</style>
 <body>
 <div class="container">
     <div>
-        <h1>Hello Spring</h1> <p>회원 기능</p>
+        <h1>회원가입 테스트</h1>
+        <p>회원 기능</p>
         <p>
             <a href="/members/new">회원 가입</a>
-            <a href="/members">회원 목록</a> </p>
+            <a href="/members">회원 목록</a>
+        </p>
     </div>
 </div> <!-- /container -->
 </body>
