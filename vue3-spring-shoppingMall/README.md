@@ -28,7 +28,8 @@
       # OR
       vue ui
       ```
-
+- **cdnjs bootstrap**
+    - https://cdnjs.com/libraries/bootstrap
     
 
 # 2. Front-end(vue3)
@@ -44,6 +45,9 @@
 App running at:
 - Local:   http://localhost:8081/
 - Network: http://192.168.45.152:8081/
+
+
+
 
 
 
