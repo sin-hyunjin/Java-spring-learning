@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <a href="/user">사용자 목록</a>
+    <router-link to="/user">사용자 목록</router-link>
     <br />
     <button @click="getData">데이터 호출</button>
   </div>
@@ -10,8 +10,8 @@
 import axios from "axios";
 const uForm = {
   no: 1,
-  name: "test",
-  email: "test@test.com",
+  name: "테스트",
+  email: "test@email.com",
   pwd: "1234",
   gender: true,
 };
@@ -20,18 +20,12 @@ const params = {
 };
 export default {
   name: "HomeView",
-  /** methods axios 호출
-   *  get방식으로 호출
-   *  .then((response )=>{}) -> 요쳥에 성공하였을시
-   *  .catch((error)=>{}) -> 에러 발생시 처리
-   */
   methods: {
     getData() {
-      // 메서드 이름을 getDate에서 getData로 수정
       axios
-        .delete("http://localhost:8080/delete", params)
-        .then((res) => {
-          console.log(res);
+        .post("http://localhost:8080/findAll")
+        .then((response) => {
+          console.log(response);
         })
         .catch((error) => {
           console.log(error);
@@ -41,16 +35,14 @@ export default {
 };
 </script>
 
-<!-- scoped = 이 파일에서의 스타일만 적용한다는 의미  -->
 <style scoped>
+.home {
+  text-align: center;
+}
 a {
   color: black;
   text-decoration: none;
   font-weight: bold;
   font-size: 1.5rem;
-}
-
-a:hover {
-  color: rgba(0, 0, 0, 0.6);
 }
 </style>

@@ -1,5 +1,3 @@
-<!-- < + enter = 기본구조 완성 -->
-
 <template>
   <div class="container mt-3">
     <h1 class="display-1 text-center">사용자 수정</h1>
@@ -12,7 +10,8 @@
           id="name"
           placeholder="이름을 입력하세요."
           name="name"
-          readonly="readonly"
+          autocomplete="off"
+          v-model="result.name"
         />
       </div>
       <div class="mb-3 mt-3">
@@ -23,6 +22,9 @@
           id="email"
           placeholder="이메일를 입력하세요."
           name="email"
+          autocomplete="off"
+          readonly
+          v-model="result.email"
         />
       </div>
       <div class="mb-3">
@@ -33,6 +35,8 @@
           id="pwd"
           placeholder="비밀번호를 입력하세요."
           name="pwd"
+          autocomplete="off"
+          v-model="result.pwd"
         />
       </div>
       <div class="d-flex">
@@ -42,11 +46,11 @@
               type="radio"
               class="form-check-input"
               id="radio1"
-              name="optradio"
-              value="1"
-              checked
-            />남성
-            <label class="form-check-label" for="radio1"></label>
+              name="gender"
+              v-bind:value="true"
+              v-model="result.gender"
+            />
+            <label class="form-check-label" for="radio1">남성</label>
           </div>
         </div>
         <div class="p-2 flex-fill">
@@ -55,27 +59,64 @@
               type="radio"
               class="form-check-input"
               id="radio2"
-              name="optradio"
-              value="2"
-            />여성
-            <label class="form-check-label" for="radio2"></label>
+              name="gender"
+              v-bind:value="false"
+              v-model="result.gender"
+            />
+            <label class="form-check-label" for="radio2">여성</label>
           </div>
         </div>
       </div>
     </form>
     <div class="d-flex">
       <div class="p-2 flex-fill d-grid">
-        <a href="/user/findById" class="btn btn-primary">저장</a>
+        <button type="button" class="btn btn-primary" @click="save">
+          저장
+        </button>
       </div>
       <div class="p-2 flex-fill d-grid">
-        <a href="/user/findById" class="btn btn-primary">취소</a>
+        <button type="button" class="btn btn-primary" @click="cancel">
+          취소
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import axios from "axios";
+export default {
+  name: "UpdateView",
+  data() {
+    return {
+      result: {},
+    };
+  },
+  created() {
+    this.result = this.$store.state.user;
+  },
+  methods: {
+    save() {
+      axios
+        .post(process.env.VUE_APP_BASEURL + "/editById", this.result)
+        .then((res) => {
+          console.log(res);
+          if (res.data.state) {
+            this.$store.commit("setUser", this.result);
+            sessionStorage.setItem("setUser", this.base64(this.result));
+            this.cancel();
+          } else {
+            alert(res.data.message);
+          }
+        })
+        .catch((err) => console.log(err));
+    },
+    cancel() {
+      this.$router.push({ name: "SelectView" });
+    },
+    base64(user) {
+      return window.btoa(encodeURIComponent(JSON.stringify(user)));
+    },
+  },
+};
 </script>
-
-<style></style>

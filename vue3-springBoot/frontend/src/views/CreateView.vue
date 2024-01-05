@@ -1,5 +1,3 @@
-<!-- < + enter = 기본구조 완성 -->
-
 <template>
   <div class="container mt-3">
     <h1 class="display-1 text-center">사용자 등록</h1>
@@ -12,6 +10,9 @@
           id="name"
           placeholder="이름을 입력하세요."
           name="name"
+          autocomplete="off"
+          :class="{ active: active.name }"
+          v-model="result.name"
         />
       </div>
       <div class="mb-3 mt-3">
@@ -22,6 +23,9 @@
           id="email"
           placeholder="이메일를 입력하세요."
           name="email"
+          autocomplete="off"
+          :class="{ active: active.email }"
+          v-model="result.email"
         />
       </div>
       <div class="mb-3">
@@ -32,6 +36,9 @@
           id="pwd"
           placeholder="비밀번호를 입력하세요."
           name="pwd"
+          autocomplete="off"
+          :class="{ active: active.pwd }"
+          v-model="result.pwd"
         />
       </div>
       <div class="d-flex">
@@ -41,11 +48,12 @@
               type="radio"
               class="form-check-input"
               id="radio1"
-              name="optradio"
-              value="1"
+              name="gender"
+              v-bind:value="true"
               checked
-            />남성
-            <label class="form-check-label" for="radio1"></label>
+              v-model="result.gender"
+            />
+            <label class="form-check-label" for="radio1">남성</label>
           </div>
         </div>
         <div class="p-2 flex-fill">
@@ -54,27 +62,83 @@
               type="radio"
               class="form-check-input"
               id="radio2"
-              name="optradio"
-              value="2"
-            />여성
-            <label class="form-check-label" for="radio2"></label>
+              name="gender"
+              v-bind:value="false"
+              v-model="result.gender"
+            />
+            <label class="form-check-label" for="radio2">여성</label>
           </div>
         </div>
       </div>
     </form>
     <div class="d-flex">
       <div class="p-2 flex-fill d-grid">
-        <a href="/user/findById" class="btn btn-primary">생성</a>
+        <button type="button" class="btn btn-primary" @click="save">
+          생성
+        </button>
       </div>
       <div class="p-2 flex-fill d-grid">
-        <a href="/user" class="btn btn-primary">취소</a>
+        <router-link to="/user" class="btn btn-primary">취소</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import axios from "axios";
+export default {
+  name: "CreateView",
+  data() {
+    return {
+      result: { name: "", email: "", pwd: "", gender: true },
+      active: { name: false, email: false, pwd: false },
+    };
+  },
+  created() {},
+  methods: {
+    save() {
+      if (this.result.name == "") {
+        //console.log('사용자 이름을 입력해주세요.')
+        this.active.name = true;
+        return;
+      } else {
+        this.active.name = false;
+      }
+      if (this.result.email == "") {
+        //console.log('사용자 이메일를 입력해주세요.')
+        this.active.email = true;
+        return;
+      } else {
+        this.active.email = false;
+      }
+      if (this.result.pwd == "") {
+        //console.log('사용자 비밀번호를 입력해주세요.')
+        this.active.pwd = true;
+        return;
+      } else {
+        this.active.pwd = false;
+      }
+      console.log(this.result);
+
+      axios
+        .put(process.env.VUE_APP_BASEURL + "/save", this.result)
+        .then((res) => {
+          console.log(res);
+          this.$store.commit("setUser", res.data.result);
+          sessionStorage.setItem("setUser", this.base64(res.data.result));
+          this.$router.push({ name: "SelectView" });
+        })
+        .catch((err) => console.log(err));
+    },
+    base64(user) {
+      return window.btoa(encodeURIComponent(JSON.stringify(user)));
+    },
+  },
+};
 </script>
 
-<style></style>
+<style scoped>
+.active {
+  background-color: blanchedalmond;
+}
+</style>

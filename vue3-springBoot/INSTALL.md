@@ -17,6 +17,8 @@
 - ## 스프링 실행
     - ./gradlew bootRun
 
+
+
 # Front-end
 
 - ### Vue3
@@ -27,3 +29,6 @@
         $ cd 프로젝트이름
         $ npm serve
 
+- ### vue store 주소 관리
+
+> $ npm install vuex

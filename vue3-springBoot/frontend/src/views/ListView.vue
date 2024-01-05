@@ -1,10 +1,10 @@
-<!-- < + enter = 기본구조 완성 -->
-
 <template>
   <div class="container mt-3">
     <h1 class="display-1 text-center">사용자 목록</h1>
     <div class="btn-group">
-      <a href="/user/save" class="btn btn-primary">사용자 추가</a>
+      <router-link to="/user/save" class="btn btn-primary"
+        >사용자 추가</router-link
+      >
     </div>
     <table class="table table-hover mt-3">
       <thead class="table-dark">
@@ -15,16 +15,15 @@
         </tr>
       </thead>
       <tbody>
-        <!-- 사용자를 눌렀을때 사용자 정보로 이동함  -->
         <tr
           class="cursor-pointer"
           v-for="row in result"
           v-bind:key="row.no"
-          v-on:click="($event) => href(row)"
+          v-on:click="href(row)"
         >
           <td>{{ row.name }}</td>
           <td>{{ row.email }}</td>
-          <td>{{ row.regDate }}</td>
+          <td>{{ dateTime(row.regDate) }}</td>
         </tr>
       </tbody>
     </table>
@@ -33,6 +32,7 @@
 
 <script>
 import axios from "axios";
+import dayjs from "dayjs";
 export default {
   name: "ListView",
   data() {
@@ -41,28 +41,36 @@ export default {
     };
   },
   created() {
+    console.log("List", this.$store.state.user);
     this.getData();
   },
   methods: {
     getData() {
-      // 메서드 이름을 getDate에서 getData로 수정
       axios
         .post("http://localhost:8080/findAll")
-        .then((res) => {
-          console.log(res);
-          this.result = res.data.result;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+        .then((response) => (this.result = response.data.result))
+        .catch((error) => console.log(error));
     },
     href(row) {
-      console.log(row);
-
+      // query  > http://localhost:8800/user/findById?name=사용자&pwd=1
+      // params > http://localhost:8800/user/findById/사용자/1
+      // index.js > path: '/user/findById/:name/:pwd'
+      this.$store.commit("setUser", row);
+      sessionStorage.setItem("setUser", this.base64(row));
       this.$router.push({ name: "SelectView" });
+    },
+    base64(user) {
+      return window.btoa(encodeURIComponent(JSON.stringify(user)));
+    },
+    dateTime(value) {
+      return dayjs(value).format("YYYY-MM-DD HH:mm:ss");
     },
   },
 };
 </script>
 
-<style></style>
+<style scoped>
+.cursor-pointer {
+  cursor: pointer;
+}
+</style>
