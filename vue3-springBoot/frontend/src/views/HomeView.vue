@@ -19,7 +19,7 @@ export default {
     getData() {
       // 메서드 이름을 getDate에서 getData로 수정
       axios
-        .get("/api")
+        .post("http://localhost:8080/findAll", {})
         .then((res) => {
           console.log(res);
         })

@@ -84,3 +84,41 @@
 
 # Back-end 데이터 처리하기 
 
+- controller method 기본정리 
+```java
+  @CrossOrigin(origins = "http://localhost:8800")
+    @GetMapping("/")
+    public String home() {
+        return "Data 준비 중";
+    }
+
+    @GetMapping("/api")
+    public String api() {
+        return "API Data 준비 중";
+    }
+    // 사용자 정보페이지  SelectView.vue "/user/findById"
+    @PostMapping("/findAll")
+    public void findAll() {
+
+    }
+
+    // 업데이트  UpdateView.vue "/user/editById"
+    @PostMapping("/editById")
+    public void editById() {
+
+    }
+    // 사용자 정보 삭제
+    @DeleteMapping("/delete")
+    public void delete() {
+
+    }
+
+    // 사용자 정보 등록 CreateView.vue "/user/save"
+    @PutMapping("/save")
+    public void save() {
+
+    }
+```
+
+
+
