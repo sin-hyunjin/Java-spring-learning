@@ -1,10 +1,10 @@
 package com.cos.security1.controller;
 
+import com.cos.security1.model.User;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-@Controller // View를 리턴 하겠다
+@Controller
 public class IndexController {
 
     // localhost:8080
@@ -31,17 +31,20 @@ public class IndexController {
         return "manager";
     }
 
-    @GetMapping("/login")
-    public String login() {
+    @GetMapping("/loginForm")
+    public String loginForm() {
         return "loginForm";
     }
 
-    @GetMapping("/join")
-    public @ResponseBody String join() {
+    @GetMapping("/joinForm")
+    public String joinForm() {
+        return "joinForm";
+    }
+    @PostMapping("/join")
+    // mddel/User에 있는 값을 가져옴
+    public @ResponseBody String join(User user) {
+        System.out.println(user);
         return "join";
     }
-    @GetMapping("/joinProc")
-    public @ResponseBody String joinProc() {
-        return "회원가입 완료됨";
-    }
+
 }
