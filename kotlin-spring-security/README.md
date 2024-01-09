@@ -1,14 +1,22 @@
-보안 
-
-인증 : 본인을 확인하는 것 
-
-인가 : 권환을 확인하는 것
 
 # 목차 
 
 - [1. Kotlin 문법](#1-kotlin)
-- [2. 회원가입 기능 만들기]()
-- [3. 권한 관리]()
+  - [1.1.  var / val](#11-var--val)
+  - [ 1.2. ? / ?. / ?: / !!](#12-------)
+  - [1.3. if / when](#13-if--when)
+  - [1.4. class--data-class--enum-class](#14-class--data-class--enum-class)
+  
+- [2. 회원가입 기능 만들기](#회원가입-기능-만들기)
+  - [2.0 요구사항 ](#0-요구사항-)
+  - [2.1 validation 추가하기 ](#1-validation-추가하기-)
+  - [2.2 BaseResponse 만들기 ](#2-baseresponse-만들기-)
+  - [2.3 ExceptionHandler 만들기 ](#3-exceptionhandler-만들기-)
+- [3. 권한 관리](#3-권환-관리-방법-)
+  - [인증과 인가](#인증과-인가)
+  - [Spring Security](#spring-security)
+  - [JWT ](#jwt-)
+  - [JwtToken 만들기 ](#jwttoken-만들기-)
 - [4. 로그인 기능 만들기]()
 - [5. 내 정보 변경 기능 만들기]()
 
@@ -313,7 +321,10 @@ logging:
 - logging.level.org.hibernate.type.descriptor.sql : trace로 하면 sql에 바인딩 되는 값을 확인
 
 # 회원가입 기능 만들기
-
+ - [0. 요구사항 ](#0-요구사항-)
+ - [1. validation 추가하기 ](#1-validation-추가하기-)
+ - [2. BaseResponse 만들기 ](#2-baseresponse-만들기-)
+ - [3. ExceptionHandler 만들기 ](#3-exceptionhandler-만들기-)
 ## 0. 요구사항 
 
 ### ENPOINT 
@@ -393,3 +404,279 @@ class ValidEnumValidator : ConstraintValidator<ValidEnum, Any> {
    - BINARY: binary 파일에는 명시되지만 reflection 에는 명시되지 않음
    - RUNTIME: binary 파일과 reflection 둘다 명시
 - @MustBeDocumente : API 일부분으로 문서화하기 위해 사용 
+
+### 1.3 DTO에 validation 추가 
+
+```java
+package com.example.demo.member.dto
+
+import com.example.demo.common.annotation.ValidEnum
+import com.example.demo.common.status.Gender
+import com.example.demo.member.entity.Member
+import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+// 회원가입시 입력받을 정보
+data class MemberDtoRequest(
+    val id: Long?,
+
+    // loginId, password, name, birthDate, gender, email에 대한 필수 입력 및 유효성 검사 어노테이션 추가
+    @field:NotBlank
+    @JsonProperty("loginId")
+    private val _loginId: String?,
+
+    @field:NotBlank
+    @field:Pattern(
+        regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#\$%^&*])[a-zA-Z0-9!@#\$%^&*]{8,20}\$",
+        message = "영문, 숫자, 특수문자를 포함한 8~20자리로 입력해주세요."
+    )
+    @JsonProperty("password")
+    private val _password: String?,
+
+    @field:NotBlank
+    @JsonProperty("name")
+    private val _name: String?,
+
+    @field:NotBlank
+    @field:Pattern(
+        regexp = "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$",
+        message = "날짜형식(YYYY-MM-DD)을 확인해주세요"
+    )
+    @JsonProperty("birthDate")
+    private val _birthDate: String?,
+
+    @field:NotBlank
+    @field:ValidEnum(enumClass = Gender::class, message = "MAN이나 WOMAN중 하나를 선택해주세요")
+    @JsonProperty("gender")
+    private val _gender: String?,
+
+    @field:NotBlank
+    @field:Email
+    @JsonProperty("email")
+    private val _email: String?,
+) {
+    // Getter 메서드에서 null이 아님을 보장하기 위해 !! 연산자 사용
+    val loginId: String
+        get() = _loginId!!
+
+    val password: String
+        get() = _password!!
+
+    val name: String
+        get() = _name!!
+
+    // 문자열 형태의 날짜를 LocalDate로 변환하는 확장 함수
+    private fun String.toLocalDate(): LocalDate =
+        LocalDate.parse(this, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+    val birthDate: LocalDate
+        get() = _birthDate!!.toLocalDate()
+
+    // 문자열 형태의 성별을 Gender 열거형으로 변환하는 확장 함수
+    val gender: Gender
+        get() = Gender.valueOf(_gender!!)
+
+    val email: String
+        get() = _email!!
+
+    fun toEntity(): Member =
+        Member(id, loginId, password, name, birthDate, gender, email)
+}
+
+```
+
+### 1.4 controller에 @vaild 추가 
+```java
+@PostMapping("/signup")
+fun signUp(@RequestBody @Valid memberDtoRequest: MemberDtoRequest):BaseResponse<Unit> {
+    val resultMsg: String = memberService.signUp(memberDtoRequest)
+    return BaseResponse(message = resultMsg)
+}
+```
+
+- @Valid가 있어야 DTO에 데이터를 담은 후 유효성 검사가 가능 
+
+## 2 BaseResponse 만들기 
+
+### 2.1 ResultCode enum class 생성 
+
+```java
+package com.example.demo.common.status
+
+enum class Gender(val desc: String) {
+    MAN("남"),
+    WOMAN( "여")
+}
+
+enum class ResultCode(val msg: String) {
+    SUCCESS("정상 처리 되었습니다."),
+    ERROR("에러가 발생했습ㄴ디ㅏ.")
+}
+
+```
+
+### 2.2 BaseResponse 생성 
+```java
+package com.example.demo.common.dto
+
+import com.example.demo.common.status.ResultCode
+import org.aspectj.bridge.Message
+
+data class BaseResponse<T> (
+    // 결과코드
+    val resultCode: String = ResultCode.SUCCESS.name,
+    // 조희 처리시 data property에 값을 넣어서 반환해줄 꺼임
+    val data: T? = null,
+    // 처리메시지
+    val message: String = ResultCode.SUCCESS.msg,
+
+    )
+
+```
+
+## 3 ExceptionHandler 만들기 
+### 3.1 InvalidInputException 생성
+```java
+package com.example.demo.common.exception
+
+class InvalidInputException(
+    val fieldName: String = "",
+    message: String = "Invalid Input"
+) : RuntimeExc
+```
+
+- @valid 외에 필드값이 문제가 있어서 exception을 발생시킬때 사용
+
+### 3.2 CustomExceptionHandler 생성 
+
+```java
+package com.example.demo.common.exception
+
+import com.example.demo.common.dto.BaseResponse
+import com.example.demo.common.status.ResultCode
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.validation.FieldError
+import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.RestControllerAdvice
+
+/**
+ * `@RestControllerAdvice`를 사용하여 컨트롤러에서 발생하는 예외들을 처리하는 클래스
+ */
+@RestControllerAdvice
+class CustomExceptionHandler {
+
+    /**
+     * `MethodArgumentNotValidException` 예외를 처리하는 메서드
+     * 주로 입력값의 유효성 검사에서 발생한 예외를 처리함
+     * 바인딩된 결과에서 필드 에러를 추출하고, 에러 메시지를 맵에 담아 응답함
+     */
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    protected fun handleValidationExceptions(ex: MethodArgumentNotValidException):
+            ResponseEntity<BaseResponse<Map<String, String>>> {
+        val errors = mutableMapOf<String, String>()
+        ex.bindingResult.allErrors.forEach { error ->
+            val fieldName = (error as FieldError).field
+            val errorMessage = error.getDefaultMessage()
+            errors[fieldName] = errorMessage ?: "Not Exception Message"
+        }
+        return ResponseEntity(BaseResponse(
+            ResultCode.ERROR.name,
+            errors,
+            ResultCode.ERROR.msg
+        ), HttpStatus.BAD_REQUEST)
+    }
+
+    /**
+     * `InvalidInputException` 예외를 처리하는 메서드
+     * 사용자 정의 예외로, 필드 이름과 에러 메시지를 응답함
+     */
+    @ExceptionHandler(InvalidInputException::class)
+    protected fun invalidInputException(ex: InvalidInputException):
+            ResponseEntity<BaseResponse<Map<String, String>>> {
+        val errors = mapOf(ex.fieldName to (ex.message ?: "Not Exception Message"))
+        return ResponseEntity(BaseResponse(
+            ResultCode.ERROR.name,
+            errors,
+            ResultCode.ERROR.msg
+        ), HttpStatus.BAD_REQUEST)
+    }
+
+    /**
+     * 그 외 모든 예외를 처리하는 기본 메서드
+     * 예외 메시지를 맵에 담아 응답함
+     */
+    @ExceptionHandler(Exception::class)
+    protected fun defaultException(ex: Exception):
+            ResponseEntity<BaseResponse<Map<String, String>>> {
+        val errors = mapOf(" " to (ex.message ?: "Not Exception Message"))
+        return ResponseEntity(BaseResponse(
+            ResultCode.ERROR.name,
+            errors,
+            ResultCode.ERROR.msg
+        ), HttpStatus.BAD_REQUEST)
+    }
+}
+
+```
+
+# 3. 권환 관리 방법 
+- [인증과 인가](#인증과-인가)
+- [Spring Security](#spring-security)
+- [JWT ](#jwt-)
+- [JwtToken 만들기 ](#jwttoken-만들기-)
+- []()
+## 인증과 인가
+  - 인증(Authentication) : 해당 사용자가 본인이 맞는지 확인하는 절차
+  - 인가(Authorization) : 인증된 사용자가 요청된 자원에 접근 가능한지를 결정하는 절차
+
+## Spring Security
+- 어플리 케이션의 보안을 담당하는 스프링 하위 프렘워크
+- 인증과 인가에대한 부분을 Filtergmfmadp EKfk cjfl 
+
+##  JWT 
+https://jwt.io/
+
+#### 생성 
+1. TokenInfo
+- 로그인시 토큰 정보를 담아 클라이언트에게 전달하는 용도 
+
+2. JwtTokenProvider
+- Token 생성, Token 정보 추출, Token 검증 
+
+3. JwtAuthenticationFilter
+- GenericFilterBean 상송
+- Fliter로 Token 정보를 검사하고 SecurityContextHolder에 authentication을 기록
+
+
+4. SecurityConfig
+- 인증 및 인가 관리
+
+5. CustomUserDetailsService
+- UserDetailService 구현
+- loadUserByUsername override
+
+## JwtToken 만들기 
+
+### 1. build.gradle.kts > dependencies에 의존성 추가 
+```java
+
+// Spring Security 
+implementation("org.springframework.boot:spring-boot-starter-security")
+// JWT
+implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+```
+- 권한 관리를 위해 spring Security + JWT사용 
+
+### 2. application.yml 에 secretKey 추가 
+```java
+jwt:
+  secret: DadFufN4Oui8Bfv3ScFj6R9fyJ9hD45E6AGFsXgFsRhT4YSdSb
+```

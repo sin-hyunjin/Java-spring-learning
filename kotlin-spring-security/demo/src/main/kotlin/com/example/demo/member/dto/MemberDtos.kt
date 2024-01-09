@@ -2,6 +2,7 @@ package com.example.demo.member.dto
 
 import com.example.demo.common.annotation.ValidEnum
 import com.example.demo.common.status.Gender
+import com.example.demo.member.entity.Member
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -71,4 +72,7 @@ data class MemberDtoRequest(
 
     val email: String
         get() = _email!!
+
+    fun toEntity(): Member =
+        Member(id, loginId, password, name, birthDate, gender, email)
 }

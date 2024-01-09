@@ -33,7 +33,12 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.1")
 	implementation("jakarta.validation:jakarta.validation-api:3.0.0") // Use the latest version available
 
-
+	// Spring Security 사용시 필요
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	// JWT 사용시 필요
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 }
 
 // allopen = plugin에서 추가로 open 해줄 것들
