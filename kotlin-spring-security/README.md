@@ -1,4 +1,7 @@
-# 프로젝트 
+# 프로젝트
+
+[인프런 강의](https://www.inflearn.com/course/%EC%BD%94%ED%8B%80%EB%A6%B0%EA%B3%BC-spring-security-jwt-%ED%9A%8C%EC%9B%90%EA%B0%80%EC%9E%85%EB%A7%8C%EB%93%A4%EA%B8%B0/dashboard)를 보며 학습하였음
+
 ### Security & JWT 기능 구현하기
 
 **회원가입**
@@ -8,91 +11,86 @@
 
 ![img_4.png](img%2Fimg_4.png)
 
-- 로그인이 정상 처리 되면 토큰 발행 
+- 로그인이 정상 처리 되면 토큰 발행
 
 **내 정보**
 
 ![img_5.png](img%2Fimg_5.png)
 
-- 발급된 토큰으로 정보 조회할수 있음 
+- 발급된 토큰으로 정보 조회할수 있음
 
-
-
-# 목차 
+# 목차
 
 - ### [1. Kotlin 문법](#1-kotlin)
-  - [1.1.  var / val](#11-var--val)
+  - [1.1. var / val](#11-var--val)
   - [ 1.2. ? / ?. / ?: / !!](#12-------)
   - [1.3. if / when](#13-if--when)
   - [1.4. class--data-class--enum-class](#14-class--data-class--enum-class)
-  
 - ### [2. 회원가입 기능 만들기](#회원가입-기능-만들기)
   - [2.0 요구사항 ](#0-요구사항-)
   - [2.1 validation 추가하기 ](#1-validation-추가하기-)
   - [2.2 BaseResponse 만들기 ](#2-baseresponse-만들기-)
   - [2.3 ExceptionHandler 만들기 ](#3-exceptionhandler-만들기-)
-  
 - ### [3. 권한 관리](#3-권환-관리-방법-)
   - [인증과 인가](#인증과-인가)
   - [Spring Security](#spring-security)
   - [JWT ](#jwt-)
   - [JwtToken 만들기 ](#jwttoken-만들기-)
-  
 - ### [4. 로그인 기능 만들기](#4-로그인-기능-만들기-)
   - [4.1 회원가입시 권한 부여 ](#41-회원가입시-권한-부여-)
   - [4.2. 로그인 후 Token 발행 ](#42-로그인-후-token-발행-)
-  
 - ### [5. 내 정보 변경 기능 만들기](#5-내-정보-변경-기능-만들기-)
   - [5.1 내 정보 조회 기능 만들기](#5-내-정보-변경-기능-만들기-)
   - [5.2 CustomUser로 Token에 User ID 관리하기 ](#52-customuser로-token에-user-id-관리하기-)
   - [5.3 내 정보 변경 기능 만들기 ](#53-내-정보-변경-기능-만들기-)
 
 # 1. Kotlin
+
 ### [Kotlin playground 사이트](https://play.kotlinlang.org/#eyJ2ZXJzaW9uIjoiMS45LjIxIiwicGxhdGZvcm0iOiJqYXZhIiwiYXJncyI6IiIsIm5vbmVNYXJrZXJzIjp0cnVlLCJ0aGVtZSI6ImlkZWEiLCJjb2RlIjoiLyoqXG4gKiBZb3UgY2FuIGVkaXQsIHJ1biwgYW5kIHNoYXJlIHRoaXMgY29kZS5cbiAqIHBsYXkua290bGlubGFuZy5vcmdcbiAqL1xuZnVuIG1haW4oKSB7XG4gICAgcHJpbnRsbihcIkhlbGxvLCB3b3JsZCEhIVwiKVxufSJ9)에서 실습해보기
 
-- [1.1.  var / val](#11-var--val)
+- [1.1. var / val](#11-var--val)
 - [ 1.2. ? / ?. / ?: / !!](#12-------)
 - [1.3. if / when](#13-if--when)
 - [1.4. class--data-class--enum-class](#14-class--data-class--enum-class)
 
 ## 1.1 var / val
 
-### var 
+### var
 
-```java 
+```java
 fun main() {
     var a = 1;
     a = 2;
     println(a);
 }
 ```
-- 읽기 쓰기 가능 
-```java 
+
+- 읽기 쓰기 가능
+
+```java
 fun main() {
     var a = 1;
 // a = "a" // Type mismatch
     println(a::class)
-    
+
 }
 ```
-- 타입 추론으로 입력된 값에 의해 자동으로 타입을 잡아줌
-- 다른 타입의 데이터를 넣으러고 하면 Type mismatch 
 
-#### val 
+- 타입 추론으로 입력된 값에 의해 자동으로 타입을 잡아줌
+- 다른 타입의 데이터를 넣으러고 하면 Type mismatch
+
+#### val
 
 ```html
-fun main() {
-val a = 1
-// a = 2 // 변경 불가
-println(a)
-}
+fun main() { val a = 1 // a = 2 // 변경 불가 println(a) }
 ```
+
 - 읽기만 가능
 - 코딩을 할때 기본적으로 val 로 하고 변경이 필요할 경우만 var 로 변경 권장
 
-#### 타입 추론 
+#### 타입 추론
 
-```java 
+```java
 fun main() {
 val s = "ABC"
 val i = 1
@@ -106,20 +104,26 @@ println("d = " + d::class)
 println("f = " + f::class)
 }
 ```
+
 - kotlin은 타입추론으로 변수에 들어오는 값을 보고 타입을 알아서 지정해줌
 - 코딩을 할때 타입추론이 되더라도 직접 명시하는 것을 권장
 
 ## 1.2. ? / ?. / ?: / !!
+
 1. ?
+
 ```java
 fun main() {
     val str: String? = null
     // val str2: String = null // null 허용하지 않음
 }
 ```
+
 - type에 ? 를 붙이면 null 허용
-- 
+-
+
 2. ?.
+
 ```java
    fun main() {
    val str: String? = "ABC"
@@ -127,10 +131,13 @@ fun main() {
    val str2: String? = null
    println(str2?.length)
    }
-   ```
+```
+
 - null safe call operator
 - ?. 앞의 값이 null 이 아니면 뒤에 명령어 실행, null 이면 null 반환
+
 3. ?:
+
 ```java
    fun main() {
    val str: String? = "ABC"
@@ -138,24 +145,28 @@ fun main() {
    val str2: String? = null
    str2 ?: println("str2 is null")
    }
-   ```
+```
+
 - Elvis operator
 - ?: 앞에 값이 null 이라면 뒤에 명령어 실행
 
 4. !!
+
 ```java
    fun main() {
    val str: String? = "ABC"
    println(str!!.length)
    }
-   ```
-   - null 허용하는 변수를 null이 아님을 보장
-   - !!로 해줬는데 실행시 null 인경우 NullPointerException 발생
+```
+
+- null 허용하는 변수를 null이 아님을 보장
+- !!로 해줬는데 실행시 null 인경우 NullPointerException 발생
 
 ## 1.3. if / when
 
 ### 1. if 문
-   형태
+
+형태
 
 ```java
    if ( 조건식 ) {
@@ -166,6 +177,7 @@ fun main() {
 ```
 
 대소 비교
+
 ```java
 fun main() {
    val a: Int = 100
@@ -177,13 +189,14 @@ fun main() {
    }
 }
 ```
+
 null 체크
 
 ```java
 fun main() {
-    
+
    val a: Int? = null
-            
+
    if (a == null) {
          println("null check true")
    } else {
@@ -191,8 +204,9 @@ fun main() {
    }
 }
 ```
-   in 체크
-   
+
+in 체크
+
 ```java
 fun main() {
     val a: Int = 100
@@ -205,8 +219,10 @@ fun main() {
 ```
 
 ## 2. when 문
-   형태
-```java 
+
+형태
+
+```java
    when ( 변수 ) {
    조건1 -> 조건1 만족시 실행 후 when 밖으로 이동
    조건2 -> 조건2 만족시 실행 후 when 밖으로 이동
@@ -214,10 +230,11 @@ fun main() {
    // ...
    else -> 아무것도 만족하지 않을때 실행
    }
-   ```
-   값 비교
+```
 
-```java 
+값 비교
+
+```java
    fun main() {
    val a: Int = 100
    when (a) {
@@ -227,28 +244,33 @@ fun main() {
    else -> println("4. Not")
    }
    }
-   ```
+```
 
-   범위 비교
-``` java
+범위 비교
+
+```java
  fun main() {
    val a: Int = 100
-   
+
    when (a) {
    in 100..199 -> println("1. 100 ~ 199")
    }
  }
 ```
+
 ## 1.4. class / data class / enum class
 
 ### 1. class
-   형태
-```java 
+
+형태
+
+```java
    class 클래스명 {
    // 프로퍼티와 메소드
    }
 ```
-```java 
+
+```java
    생성자로 인스턴스 생성
    fun main() {
    val item = Item("BOOK", 10_000)
@@ -258,6 +280,7 @@ fun main() {
 ```
 
 ### 2. data class
+
 ```
    data class MemberDto(
    val name: String,
@@ -266,11 +289,13 @@ fun main() {
    val email: String,
    )
 ```
+
 - DTO 만들때 사용
 - getter, setter(var 인 경우), equals, hashCode, toString, copy, componentN 자동 생
-   성
+  성
 
 ### 3. enum class
+
 ```java
 enum class Color {
 RED,
@@ -278,11 +303,12 @@ GREEN,
 BLUE
 }
 ```
+
 상수들을 모아놓은 집합
 
-# 회원가입 기능 만들기 
+# 회원가입 기능 만들기
 
-## application.yml 셋팅 
+## application.yml 셋팅
 
 ```java
 server:
@@ -320,18 +346,20 @@ logging:
 
 ```
 
-### server : 서버 관련 설정 
+### server : 서버 관련 설정
+
 - server.port : 서버 포트(default. 8080)
 - server.servlet.encoding.charset : HTTP 요청과 응답의 문자 집합
 - server.servlet.encoding.enabled : HTTP 인코딩 지원 여부
-- server.servlet.encoding.force : HTTP 요쳥과 응답에서 문자 집합에 인코딩을 강제할지 여부 
+- server.servlet.encoding.force : HTTP 요쳥과 응답에서 문자 집합에 인코딩을 강제할지 여부
 
 ## spring.datasource : Database 접속 정보
 
-## spring.jpa : jpa 설정 정보 
+## spring.jpa : jpa 설정 정보
 
-- spring.jpa.open-in-view : true일 경우 영속성 컨텍스트가 트랜잭션 범위를 넘어선 레이어까지 유지 
+- spring.jpa.open-in-view : true일 경우 영속성 컨텍스트가 트랜잭션 범위를 넘어선 레이어까지 유지
 - spring.jpa.hibernate.ddl-auto
+
   - create : 기존테이블 삭제후 다시생성 ( DRAP + CREATE)
   - create-drop : create와 같으나 종료시점에 테이블 DROP
   - create update : 변경분만 반영(운영DB에서는 사용해서는 안됨)
@@ -340,55 +368,57 @@ logging:
 
 - spring.jpa.properties.hibernate.show_sql: System.out에 sql 로그출력
 - spring.jpa.properties.hibernate.format_sql : sql을 보기좋게 줄맞춤
-- spring.jpa.properties.hibernate.highlight_sql : sql 색상 표시추가 
+- spring.jpa.properties.hibernate.highlight_sql : sql 색상 표시추가
 
 ## logging: 로그에 관한 정보
+
 - logging.pattern.console : 기본 로그 형태 지정
 - logging.level.org.hibernate.SQL : logger 에 sql로그 출력(권장)
 - logging.level.org.hibernate.type.descriptor.sql : trace로 하면 sql에 바인딩 되는 값을 확인
 
 # 회원가입 기능 만들기
- - [0. 요구사항 ](#0-요구사항-)
- - [1. validation 추가하기 ](#1-validation-추가하기-)
- - [2. BaseResponse 만들기 ](#2-baseresponse-만들기-)
- - [3. ExceptionHandler 만들기 ](#3-exceptionhandler-만들기-)
-## 0. 요구사항 
 
-### ENPOINT 
+- [0. 요구사항 ](#0-요구사항-)
+- [1. validation 추가하기 ](#1-validation-추가하기-)
+- [2. BaseResponse 만들기 ](#2-baseresponse-만들기-)
+- [3. ExceptionHandler 만들기 ](#3-exceptionhandler-만들기-)
+
+## 0. 요구사항
+
+### ENPOINT
 
 ```java
 POST /api/member/signup
 ```
 
-### 회원가입시 입력받을 정보 
+### 회원가입시 입력받을 정보
 
 ![img.png](img%2Fimg.png)
 
-### 패키지 정의 
+### 패키지 정의
 
 ![img_1.png](img%2Fimg_1.png)
 
-
-- com.example.demo.common : 
-   - annotation : 사용자 생성 어노테이션
-   - dto : 어플리케이션 전반에 공통적으로 사용할 수 있는 DTO
-   - exception : exception cjfl
-   - status : 어플리케이션 상태관리 
+- com.example.demo.common :
+  - annotation : 사용자 생성 어노테이션
+  - dto : 어플리케이션 전반에 공통적으로 사용할 수 있는 DTO
+  - exception : exception cjfl
+  - status : 어플리케이션 상태관리
 - com.example.demo.member : 회원정보 관련 기능 분류
   - controller : Request 를 받을 End Point
   - dto : 회원정보 관련 DTO
   - entity : 회원정보 관련 ENtity
   - repository : 회원정보 관련
-  - service : 비즈니스 로직 
+  - service : 비즈니스 로직
 
+## 1. validation 추가하기
 
-## 1. validation 추가하기 
-### 1.1 build.gradle.kts > dependencies에 의존성 추가 
+### 1.1 build.gradle.kts > dependencies에 의존성 추가
 
 > implementation("org.springframework.boot:spring-boot-starter-validation")
 
-- validation을 사용하기 위해 Maven Repository 에서 spring validation 검색 후 추가 
-   
+- validation을 사용하기 위해 Maven Repository 에서 spring validation 검색 후 추가
+
 ### 1.2 Enum 체크할 Validator 생성
 
 ```java
@@ -427,12 +457,12 @@ class ValidEnumValidator : ConstraintValidator<ValidEnum, Any> {
 
 - @Target : 어노테이션이 지정되어 사용할 종류를 정의
 - @Retention : 어노테이션을 컴파일된 클래스 파일에 저장할 것인지 런타임에 반영할 것인지 정의
-   - SOURCE: binary 파일로 명시되지 않음
-   - BINARY: binary 파일에는 명시되지만 reflection 에는 명시되지 않음
-   - RUNTIME: binary 파일과 reflection 둘다 명시
-- @MustBeDocumente : API 일부분으로 문서화하기 위해 사용 
+  - SOURCE: binary 파일로 명시되지 않음
+  - BINARY: binary 파일에는 명시되지만 reflection 에는 명시되지 않음
+  - RUNTIME: binary 파일과 reflection 둘다 명시
+- @MustBeDocumente : API 일부분으로 문서화하기 위해 사용
 
-### 1.3 DTO에 validation 추가 
+### 1.3 DTO에 validation 추가
 
 ```java
 package com.example.demo.member.dto
@@ -516,7 +546,8 @@ data class MemberDtoRequest(
 
 ```
 
-### 1.4 controller에 @vaild 추가 
+### 1.4 controller에 @vaild 추가
+
 ```java
 @PostMapping("/signup")
 fun signUp(@RequestBody @Valid memberDtoRequest: MemberDtoRequest):BaseResponse<Unit> {
@@ -525,11 +556,11 @@ fun signUp(@RequestBody @Valid memberDtoRequest: MemberDtoRequest):BaseResponse<
 }
 ```
 
-- @Valid가 있어야 DTO에 데이터를 담은 후 유효성 검사가 가능 
+- @Valid가 있어야 DTO에 데이터를 담은 후 유효성 검사가 가능
 
-## 2 BaseResponse 만들기 
+## 2 BaseResponse 만들기
 
-### 2.1 ResultCode enum class 생성 
+### 2.1 ResultCode enum class 생성
 
 ```java
 package com.example.demo.common.status
@@ -546,7 +577,8 @@ enum class ResultCode(val msg: String) {
 
 ```
 
-### 2.2 BaseResponse 생성 
+### 2.2 BaseResponse 생성
+
 ```java
 package com.example.demo.common.dto
 
@@ -565,8 +597,10 @@ data class BaseResponse<T> (
 
 ```
 
-## 3 ExceptionHandler 만들기 
+## 3 ExceptionHandler 만들기
+
 ### 3.1 InvalidInputException 생성
+
 ```java
 package com.example.demo.common.exception
 
@@ -578,7 +612,7 @@ class InvalidInputException(
 
 - @valid 외에 필드값이 문제가 있어서 exception을 발생시킬때 사용
 
-### 3.2 CustomExceptionHandler 생성 
+### 3.2 CustomExceptionHandler 생성
 
 ```java
 package com.example.demo.common.exception
@@ -652,69 +686,82 @@ class CustomExceptionHandler {
 
 ```
 
-# 3. 권환 관리 방법 
+# 3. 권환 관리 방법
+
 - [인증과 인가](#인증과-인가)
 - [Spring Security](#spring-security)
 - [JWT ](#jwt-)
 - [JwtToken 만들기 ](#jwttoken-만들기-)
 - []()
+
 ## 인증과 인가
-  - 인증(Authentication) : 해당 사용자가 본인이 맞는지 확인하는 절차
-  - 인가(Authorization) : 인증된 사용자가 요청된 자원에 접근 가능한지를 결정하는 절차
+
+- 인증(Authentication) : 해당 사용자가 본인이 맞는지 확인하는 절차
+- 인가(Authorization) : 인증된 사용자가 요청된 자원에 접근 가능한지를 결정하는 절차
 
 ## Spring Security
-- 어플리 케이션의 보안을 담당하는 스프링 하위 프렘워크
-- 인증과 인가에대한 부분을 Filtergmfmadp EKfk cjfl 
 
-##  JWT 
+- 어플리 케이션의 보안을 담당하는 스프링 하위 프렘워크
+- 인증과 인가에대한 부분을 Filtergmfmadp EKfk cjfl
+
+## JWT
+
 https://jwt.io/
 
-#### 생성 
+#### 생성
+
 1. TokenInfo
-- 로그인시 토큰 정보를 담아 클라이언트에게 전달하는 용도 
+
+- 로그인시 토큰 정보를 담아 클라이언트에게 전달하는 용도
 
 2. JwtTokenProvider
-- Token 생성, Token 정보 추출, Token 검증 
+
+- Token 생성, Token 정보 추출, Token 검증
 
 3. JwtAuthenticationFilter
+
 - GenericFilterBean 상송
 - Fliter로 Token 정보를 검사하고 SecurityContextHolder에 authentication을 기록
 
-
 4. SecurityConfig
+
 - 인증 및 인가 관리
 
 5. CustomUserDetailsService
+
 - UserDetailService 구현
 - loadUserByUsername override
 
-## JwtToken 만들기 
+## JwtToken 만들기
 
-### 1. build.gradle.kts > dependencies에 의존성 추가 
+### 1. build.gradle.kts > dependencies에 의존성 추가
+
 ```java
 
-// Spring Security 
+// Spring Security
 implementation("org.springframework.boot:spring-boot-starter-security")
 // JWT
 implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 ```
-- 권한 관리를 위해 spring Security + JWT사용 
 
-### 2. application.yml 에 secretKey 추가 
+- 권한 관리를 위해 spring Security + JWT사용
+
+### 2. application.yml 에 secretKey 추가
+
 ```java
 jwt:
   secret: DadFufN4Oui8Bfv3ScFj6R9fyJ9hD45E6AGFsXgFsRhT4YSdSb
 ```
 
-### 3. 패키지 생성 
+### 3. 패키지 생성
 
-- com.example.demo.common : 공통적으로 사용할 수 있는 기능 분류 
+- com.example.demo.common : 공통적으로 사용할 수 있는 기능 분류
   - authority : 권한 관련 기능 분류
   - service : CustomUserDetailsServie 생성
 
-### 4. Token 정보 담을 data class 생성 
+### 4. Token 정보 담을 data class 생성
 
 ```java
 package com.example.demo.common.authority
@@ -837,7 +884,8 @@ class JwtTokenProvider {
 
 ```
 
-### 6. JwtAuthenticationFilter 생성 
+### 6. JwtAuthenticationFilter 생성
+
 ```java
 package com.example.demo.common.authority
 
@@ -887,25 +935,28 @@ class JwtAuthenticationFilter(
 
 ```
 
-# 4. 로그인 기능 만들기 
- - [4.1 회원가입시 권한 부여 ](#41-회원가입시-권한-부여-)
- - [4.2. 로그인 후 Token 발행 ](#42-로그인-후-token-발행-)
-    - [0.요구 사항 ](#0요구-사항-)
-    - [1. Login DTO 생성 ](#1-login-dto-생성-)
-    - [2. service에 로그인 기능 추가 ](#2-service에-로그인-기능-추가-)
-    - [3. controller에 로그인 EndPoint 추가](#3-controller에-로그인-endpoint-추가)
-    - [4. CustomUserDetailsService 생성](#4-customuserdetailsservice-생성)
-    - [5. 로그인 실패시 Exception 처리 추가 ](#5-로그인-실패시-exception-처리-추가-)
+# 4. 로그인 기능 만들기
 
-## 4.1 회원가입시 권한 부여 
+- [4.1 회원가입시 권한 부여 ](#41-회원가입시-권한-부여-)
+- [4.2. 로그인 후 Token 발행 ](#42-로그인-후-token-발행-)
+  - [0.요구 사항 ](#0요구-사항-)
+  - [1. Login DTO 생성 ](#1-login-dto-생성-)
+  - [2. service에 로그인 기능 추가 ](#2-service에-로그인-기능-추가-)
+  - [3. controller에 로그인 EndPoint 추가](#3-controller에-로그인-endpoint-추가)
+  - [4. CustomUserDetailsService 생성](#4-customuserdetailsservice-생성)
+  - [5. 로그인 실패시 Exception 처리 추가 ](#5-로그인-실패시-exception-처리-추가-)
 
-## 4.2. 로그인 후 Token 발행 
+## 4.1 회원가입시 권한 부여
 
-### 0.요구 사항 
+## 4.2. 로그인 후 Token 발행
+
+### 0.요구 사항
+
 **EndPoint**
+
 > post /api/member/login
 
-### 1. Login DTO 생성 
+### 1. Login DTO 생성
 
 ```java
 data class LoginDto(
@@ -919,10 +970,12 @@ data class LoginDto(
 val loginId: String
         get() = _loginId!!
     val password: String
-        get() = _password!! 
+        get() = _password!!
 }
 ```
-### 2. service에 로그인 기능 추가 
+
+### 2. service에 로그인 기능 추가
+
 ```java
 @Transactional
 @Service
@@ -932,9 +985,9 @@ class MemberService(
     //
     private val authenticationManagerBuilder: AuthenticationManagerBuilder,
     private val jwtTokenProvider: JwtTokenProvider,
-    ){ ... 
+    ){ ...
   /**
- * 로그인 
+ * 로그인
  */
 fun login(loginDto: LoginDto): TokenInfo {
     val authenticationToken =
@@ -944,7 +997,9 @@ fun login(loginDto: LoginDto): TokenInfo {
     return jwtTokenProvider.createToken(authentication)
 }
 ```
+
 ### 3. controller에 로그인 EndPoint 추가
+
 ```java
 @PostMapping("/login")
 fun login(@RequestBody @Valid loginDto: LoginDto): BaseResponse<TokenInfo> {
@@ -952,7 +1007,9 @@ fun login(@RequestBody @Valid loginDto: LoginDto): BaseResponse<TokenInfo> {
     return BaseResponse(data = tokenInfo)
 }
 ```
+
 ### 4. CustomUserDetailsService 생성
+
 ```java
 package com.example.auth.common.service
 import com.example.auth.member.entity.Member
@@ -980,7 +1037,9 @@ class CustomUserDetailsService(
                   member.memberRole!!.map { SimpleGrantedAuthority("ROLE_${it.role}") }
           ) }
 ```
-### 5. 로그인 실패시 Exception 처리 추가 
+
+### 5. 로그인 실패시 Exception 처리 추가
+
 ```java
 @ExceptionHandler(BadCredentialsException::class)
 protected fun badCredentialsException(ex: BadCredentialsException):
@@ -993,18 +1052,20 @@ val errors = mapOf(" " to " .") return ResponseEntity(BaseResponse(
 ), HttpStatus.BAD_REQUEST)
 ```
 
+# 5 내 정보 변경 기능 만들기
 
-# 5 내 정보 변경 기능 만들기 
 - [5.1 내 정보 조회 기능 만들기](#5-내-정보-변경-기능-만들기-)
 - [5.2 CustomUser로 Token에 User ID 관리하기 ](#52-customuser로-token에-user-id-관리하기-)
 - [5.3 내 정보 변경 기능 만들기 ](#53-내-정보-변경-기능-만들기-)
 
 ## 5.1 내 정보 조회 기능 만들기
 
-### 0. 요구사항 
-  > GET /api/member/info
-> 
-  > Authorization: Bearer ${accessToken}
+### 0. 요구사항
+
+> GET /api/member/info
+>
+> Authorization: Bearer ${accessToken}
+
 ### 1. 정보 담을 DTO 생성
 
 ```java
@@ -1017,7 +1078,9 @@ data class MemberDtoResponse(
     val email: String,
 )
 ```
+
 ### 2. Entity에 DTO 변경 기능 추가
+
 ```java
 @Entity
 @Table(
@@ -1029,34 +1092,34 @@ class Member(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null,
-    
+
     @Column(nullable = false, length = 30, updatable = false)
     val loginId: String,
-    
+
     @Column(nullable = false, length = 100)
     val password: String,
-    
+
     @Column(nullable = false, length = 10)
     val name: String,
-    
+
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     val birthDate: LocalDate,
-    
+
     @Column(nullable = false, length = 5)
     @Enumerated(EnumType.STRING)
     val gender: Gender,
-    
+
     @Column(nullable = false, length = 30)
     val email: String,
 ) {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "member")
     val memberRole: List<MemberRole>? = null
-  
+
     // 추가
     private fun LocalDate.formatDate(): String =
     this.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-  
+
     fun toDto(): MemberDtoResponse =
         MemberDtoResponse(
             id!!,
@@ -1070,6 +1133,7 @@ class Member(
 ```
 
 ### 3. service에 내 정보 보기 기능 추가
+
 ```java
 /**
 * 내 정보 보기
@@ -1080,7 +1144,9 @@ fun searchMyInfo(id: Long): MemberDtoResponse {
     return member.toDto()
 }
 ```
+
 ### 4. controller에 EndPoint 추가
+
 ```java
 /**
 * 내 정보 보기
@@ -1091,7 +1157,8 @@ fun searchMyInfo(@PathVariable id: Long): BaseResponse<MemberDtoResponse> {
     return BaseResponse(data = response)
 }
 ```
-### 5. Spring Security 권한 변경 
+
+### 5. Spring Security 권한 변경
 
 ```java
 @Bean
@@ -1114,15 +1181,17 @@ fun filterChain(http: HttpSecurity): SecurityFilterChain {
     return http.build()
 }
 ```
-## 5.2 CustomUser로 Token에 User ID 관리하기 
+
+## 5.2 CustomUser로 Token에 User ID 관리하기
 
 ### 1. CustomUser 생성
+
 ```java
 package com.example.auth.common.dto
-        
+
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.User
-        
+
 class CustomUser(
     val userId: Long,
     userName: String,
@@ -1130,7 +1199,9 @@ class CustomUser(
     authorities: Collection<GrantedAuthority>
 ) : User(userName, password, authorities)
 ```
-### 2. createUserDetails 변경 
+
+### 2. createUserDetails 변경
+
 ```java
 private fun createUserDetails(member: Member): UserDetails =
     CustomUser(
@@ -1140,7 +1211,9 @@ private fun createUserDetails(member: Member): UserDetails =
         member.memberRole!!.map { SimpleGrantedAuthority("ROLE_${it.role}") }
     )
 ```
-### 3. Token 생성시 userId 정보도 기록 
+
+### 3. Token 생성시 userId 정보도 기록
+
 ```java
 /**
 * token 생성
@@ -1163,29 +1236,32 @@ fun createToken(authentication: Authentication): TokenInfo {
 }
 // Access Token
 ```
+
 ### 4. Token 정보 추출시 userId도 포함
+
 ```java
 /**
 * token 정보 추출
 */
 fun getAuthentication(token: String): Authentication {
       val claims: Claims = getClaims(token)
-          
+
       val auth = claims["auth"] ?: throw RuntimeException("잘못된 토큰 입니다.")
       val userId = claims["userId"] ?: throw RuntimeException("잘못된 토큰 입니다.")
-          
+
       // 권한 정보 추출
       val authorities: Collection<GrantedAuthority> = (auth as String)
           .split(",")
           .map { SimpleGrantedAuthority(it) }
-  
+
       val principal: UserDetails =
              CustomUser(userId.toString().toLong(), claims.subject, "", authorities)
-          
+
       return UsernamePasswordAuthenticationToken(principal, "", authorities)
 }
 ```
-### 5. controller에 userId 가져오게 수정 
+
+### 5. controller에 userId 가져오게 수정
 
 ```java
 /**
@@ -1203,15 +1279,14 @@ fun searchMyInfo(): BaseResponse<MemberDtoResponse> {
 }
 ```
 
+## 5.3 내 정보 변경 기능 만들기
 
+### 0. 요구사항
 
-## 5.3 내 정보 변경 기능 만들기 
+> put /api/member/info
 
-### 0. 요구사항 
+### 1. service에 내 정보 수정 기능 추가
 
-> put /api/member/info 
-
-### 1. service에 내 정보 수정 기능 추가 
 ```java
 fun saveMyInfo(memberDtoRequest: MemberDtoRequest): String {
     val member = memberDtoRequest.toEntity()
@@ -1219,7 +1294,8 @@ fun saveMyInfo(memberDtoRequest: MemberDtoRequest): String {
     return "수정 완료되었습니다."
 }
 ```
-### 2. controller에 EndPoint 추가 
+
+### 2. controller에 EndPoint 추가
 
 ```java
 @PutMapping("/info")
