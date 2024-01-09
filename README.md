@@ -12,6 +12,6 @@
 
 - #### [sprintboot-Security & JWT](./sprintboot-Security%26JWT/)
   - Explore the integration of Spring Boot with Security and JWT (JSON Web Token), focusing on secure authentication and authorization.
-  -
+  
 - #### [vue3-springBoot](./vue3-springBoot/)
   - This section combines Vue.js version 3 with Spring Boot, showcasing the development of modern, dynamic web applications.
