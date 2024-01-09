@@ -1,26 +1,51 @@
+# 프로젝트 
+### Security & JWT 기능 구현하기
+
+**회원가입**
+![img_3.png](img%2Fimg_3.png)
+
+**로그인**
+
+![img_4.png](img%2Fimg_4.png)
+
+- 로그인이 정상 처리 되면 토큰 발행 
+
+**내 정보**
+
+![img_5.png](img%2Fimg_5.png)
+
+- 발급된 토큰으로 정보 조회할수 있음 
+
+
 
 # 목차 
 
-- [1. Kotlin 문법](#1-kotlin)
+- ### [1. Kotlin 문법](#1-kotlin)
   - [1.1.  var / val](#11-var--val)
   - [ 1.2. ? / ?. / ?: / !!](#12-------)
   - [1.3. if / when](#13-if--when)
   - [1.4. class--data-class--enum-class](#14-class--data-class--enum-class)
   
-- [2. 회원가입 기능 만들기](#회원가입-기능-만들기)
+- ### [2. 회원가입 기능 만들기](#회원가입-기능-만들기)
   - [2.0 요구사항 ](#0-요구사항-)
   - [2.1 validation 추가하기 ](#1-validation-추가하기-)
   - [2.2 BaseResponse 만들기 ](#2-baseresponse-만들기-)
   - [2.3 ExceptionHandler 만들기 ](#3-exceptionhandler-만들기-)
-- [3. 권한 관리](#3-권환-관리-방법-)
+  
+- ### [3. 권한 관리](#3-권환-관리-방법-)
   - [인증과 인가](#인증과-인가)
   - [Spring Security](#spring-security)
   - [JWT ](#jwt-)
   - [JwtToken 만들기 ](#jwttoken-만들기-)
-- [4. 로그인 기능 만들기](#4-로그인-기능-만들기-)
+  
+- ### [4. 로그인 기능 만들기](#4-로그인-기능-만들기-)
   - [4.1 회원가입시 권한 부여 ](#41-회원가입시-권한-부여-)
   - [4.2. 로그인 후 Token 발행 ](#42-로그인-후-token-발행-)
-- [5. 내 정보 변경 기능 만들기]()
+  
+- ### [5. 내 정보 변경 기능 만들기](#5-내-정보-변경-기능-만들기-)
+  - [5.1 내 정보 조회 기능 만들기](#5-내-정보-변경-기능-만들기-)
+  - [5.2 CustomUser로 Token에 User ID 관리하기 ](#52-customuser로-token에-user-id-관리하기-)
+  - [5.3 내 정보 변경 기능 만들기 ](#53-내-정보-변경-기능-만들기-)
 
 # 1. Kotlin
 ### [Kotlin playground 사이트](https://play.kotlinlang.org/#eyJ2ZXJzaW9uIjoiMS45LjIxIiwicGxhdGZvcm0iOiJqYXZhIiwiYXJncyI6IiIsIm5vbmVNYXJrZXJzIjp0cnVlLCJ0aGVtZSI6ImlkZWEiLCJjb2RlIjoiLyoqXG4gKiBZb3UgY2FuIGVkaXQsIHJ1biwgYW5kIHNoYXJlIHRoaXMgY29kZS5cbiAqIHBsYXkua290bGlubGFuZy5vcmdcbiAqL1xuZnVuIG1haW4oKSB7XG4gICAgcHJpbnRsbihcIkhlbGxvLCB3b3JsZCEhIVwiKVxufSJ9)에서 실습해보기
@@ -865,7 +890,12 @@ class JwtAuthenticationFilter(
 # 4. 로그인 기능 만들기 
  - [4.1 회원가입시 권한 부여 ](#41-회원가입시-권한-부여-)
  - [4.2. 로그인 후 Token 발행 ](#42-로그인-후-token-발행-)
-
+    - [0.요구 사항 ](#0요구-사항-)
+    - [1. Login DTO 생성 ](#1-login-dto-생성-)
+    - [2. service에 로그인 기능 추가 ](#2-service에-로그인-기능-추가-)
+    - [3. controller에 로그인 EndPoint 추가](#3-controller에-로그인-endpoint-추가)
+    - [4. CustomUserDetailsService 생성](#4-customuserdetailsservice-생성)
+    - [5. 로그인 실패시 Exception 처리 추가 ](#5-로그인-실패시-exception-처리-추가-)
 
 ## 4.1 회원가입시 권한 부여 
 
@@ -961,4 +991,247 @@ val errors = mapOf(" " to " .") return ResponseEntity(BaseResponse(
     errors,
     ResultCode.ERROR.msg
 ), HttpStatus.BAD_REQUEST)
+```
+
+
+# 5 내 정보 변경 기능 만들기 
+- [5.1 내 정보 조회 기능 만들기](#5-내-정보-변경-기능-만들기-)
+- [5.2 CustomUser로 Token에 User ID 관리하기 ](#52-customuser로-token에-user-id-관리하기-)
+- [5.3 내 정보 변경 기능 만들기 ](#53-내-정보-변경-기능-만들기-)
+
+## 5.1 내 정보 조회 기능 만들기
+
+### 0. 요구사항 
+  > GET /api/member/info
+> 
+  > Authorization: Bearer ${accessToken}
+### 1. 정보 담을 DTO 생성
+
+```java
+data class MemberDtoResponse(
+    val id: Long,
+    val loginId: String,
+    val name: String,
+    val birthDate: String,
+    val gender: String,
+    val email: String,
+)
+```
+### 2. Entity에 DTO 변경 기능 추가
+```java
+@Entity
+@Table(
+      uniqueConstraints = [
+              UniqueConstraint(name = "uk_member_login_id", columnNames = ["loginId"])
+      ]
+)
+class Member(
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long? = null,
+    
+    @Column(nullable = false, length = 30, updatable = false)
+    val loginId: String,
+    
+    @Column(nullable = false, length = 100)
+    val password: String,
+    
+    @Column(nullable = false, length = 10)
+    val name: String,
+    
+    @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
+    val birthDate: LocalDate,
+    
+    @Column(nullable = false, length = 5)
+    @Enumerated(EnumType.STRING)
+    val gender: Gender,
+    
+    @Column(nullable = false, length = 30)
+    val email: String,
+) {
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "member")
+    val memberRole: List<MemberRole>? = null
+  
+    // 추가
+    private fun LocalDate.formatDate(): String =
+    this.format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+  
+    fun toDto(): MemberDtoResponse =
+        MemberDtoResponse(
+            id!!,
+            loginId,
+            name,
+            birthDate.formatDate(),
+            gender.desc,
+            email
+      )
+}
+```
+
+### 3. service에 내 정보 보기 기능 추가
+```java
+/**
+* 내 정보 보기
+*/
+fun searchMyInfo(id: Long): MemberDtoResponse {
+    val member = memberRepository.findByIdOrNull(id)
+         ?: throw InvalidInputException("id", "회원번호(${id})가 존재하지 않는 유저입니다.")
+    return member.toDto()
+}
+```
+### 4. controller에 EndPoint 추가
+```java
+/**
+* 내 정보 보기
+*/
+@GetMapping("/info/{id}")
+fun searchMyInfo(@PathVariable id: Long): BaseResponse<MemberDtoResponse> {
+    val response = memberService.searchMyInfo(id)
+    return BaseResponse(data = response)
+}
+```
+### 5. Spring Security 권한 변경 
+
+```java
+@Bean
+fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    http
+        .httpBasic { it.disable() }
+        .csrf { it.disable() }
+        .sessionManagement {
+            it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        }
+        .authorizeHttpRequests {
+            it.requestMatchers("/api/member/signup", "/api/member/login").anonymous()
+                .requestMatchers("/api/member/info/**").hasRole("MEMBER")
+                .anyRequest().permitAll()
+        }
+        .addFilterBefore(
+            JwtAuthenticationFilter(jwtTokenProvider),
+            UsernamePasswordAuthenticationFilter::class.java
+        )
+    return http.build()
+}
+```
+## 5.2 CustomUser로 Token에 User ID 관리하기 
+
+### 1. CustomUser 생성
+```java
+package com.example.auth.common.dto
+        
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.User
+        
+class CustomUser(
+    val userId: Long,
+    userName: String,
+    password: String,
+    authorities: Collection<GrantedAuthority>
+) : User(userName, password, authorities)
+```
+### 2. createUserDetails 변경 
+```java
+private fun createUserDetails(member: Member): UserDetails =
+    CustomUser(
+        member.id!!,
+        member.loginId,
+        passwordEncoder.encode(member.password),
+        member.memberRole!!.map { SimpleGrantedAuthority("ROLE_${it.role}") }
+    )
+```
+### 3. Token 생성시 userId 정보도 기록 
+```java
+/**
+* token 생성
+*/
+fun createToken(authentication: Authentication): TokenInfo {
+    val authorities: String = authentication
+        .authorities
+        .joinToString(",", transform = GrantedAuthority::getAuthority)
+    val now = Date()
+    val accessExpiration = Date(now.time + EXPIRATION_MILLISECONDS)
+    val accessToken = Jwts.builder()
+              .setSubject(authentication.name)
+              .claim("auth", authorities)
+              .claim("userId", (authentication.principal as CustomUser).userId)
+    .setIssuedAt(now)
+              .setExpiration(accessExpiration)
+              .signWith(key, SignatureAlgorithm.HS256)
+              .compact()
+  return TokenInfo("Bearer", accessToken)
+}
+// Access Token
+```
+### 4. Token 정보 추출시 userId도 포함
+```java
+/**
+* token 정보 추출
+*/
+fun getAuthentication(token: String): Authentication {
+      val claims: Claims = getClaims(token)
+          
+      val auth = claims["auth"] ?: throw RuntimeException("잘못된 토큰 입니다.")
+      val userId = claims["userId"] ?: throw RuntimeException("잘못된 토큰 입니다.")
+          
+      // 권한 정보 추출
+      val authorities: Collection<GrantedAuthority> = (auth as String)
+          .split(",")
+          .map { SimpleGrantedAuthority(it) }
+  
+      val principal: UserDetails =
+             CustomUser(userId.toString().toLong(), claims.subject, "", authorities)
+          
+      return UsernamePasswordAuthenticationToken(principal, "", authorities)
+}
+```
+### 5. controller에 userId 가져오게 수정 
+
+```java
+/**
+* 내 정보 보기
+*/
+@GetMapping("/info")
+fun searchMyInfo(): BaseResponse<MemberDtoResponse> {
+    val userId = (SecurityContextHolder
+            .getContext()
+            .authentication
+            .principal as CustomUser)
+            .userId
+    val response = memberService.searchMyInfo(userId)
+    return BaseResponse(data = response)
+}
+```
+
+
+
+## 5.3 내 정보 변경 기능 만들기 
+
+### 0. 요구사항 
+
+> put /api/member/info 
+
+### 1. service에 내 정보 수정 기능 추가 
+```java
+fun saveMyInfo(memberDtoRequest: MemberDtoRequest): String {
+    val member = memberDtoRequest.toEntity()
+    memberRepository.save(member)
+    return "수정 완료되었습니다."
+}
+```
+### 2. controller에 EndPoint 추가 
+
+```java
+@PutMapping("/info")
+fun saveMyInfo(@RequestBody @Valid memberDtoRequest: MemberDtoRequest):
+BaseResponse<Unit> {
+    val userId = (SecurityContextHolder
+            .getContext()
+            .authentication
+            .principal as CustomUser)
+            .userId
+    memberDtoRequest.id = userId
+    val resultMsg: String = memberService.saveMyInfo(memberDtoRequest)
+    return BaseResponse(messase = resultMsg)
+}
 ```

@@ -29,7 +29,8 @@ class SecurityConfig(
             }
             // 특정 API 엔드포인트에 대한 접근 권한 설정
             .authorizeHttpRequests {
-                it.requestMatchers("/api/member/signup").anonymous() // 회원가입 API는 익명 접근 허용
+                it.requestMatchers("/api/member/signup", "/api/member/login").anonymous()
+                    .requestMatchers("/api/member/info/**").hasRole("MEMBER")
                     .anyRequest().permitAll() // 나머지 요청은 모두 허용
             }
             // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 앞에 추가
