@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 // 회원가입시 입력받을 정보
 data class MemberDtoRequest(
 
-    val id: Long?,
+    var id: Long?,
 
     // loginId, password, name, birthDate, gender, email에 대한 필수 입력 및 유효성 검사 어노테이션 추가
     @field:NotBlank

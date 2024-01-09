@@ -1,5 +1,6 @@
 package com.example.demo.common.authority
 
+import com.example.demo.common.dto.CustomUser
 import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
@@ -44,11 +45,11 @@ class JwtTokenProvider {
         val accessToken = Jwts.builder()
             .setSubject(authentication.name)
             .claim("auth", authorities)
+            .claim("userId", (authentication.principal as CustomUser).userId)
             .setIssuedAt(now)
             .setExpiration(accessExpiration)
             .signWith(key, SignatureAlgorithm.HS256)
             .compact()
-
         return TokenInfo("Bearer", accessToken)
     }
 
@@ -57,15 +58,24 @@ class JwtTokenProvider {
      */
     fun getAuthentication(token: String): Authentication {
         val claims: Claims = getClaims(token)
-        val auth = claims["auth"] ?: throw RuntimeException("Invalid JWT Token")
+
+        val auth = claims["auth"] as? String ?: throw RuntimeException("Invalid or empty 'auth' claim in JWT token")
+        val userId = claims["userId"]?.toString()
+
+        if (userId.isNullOrBlank()) {
+            throw RuntimeException("Invalid or empty 'userId' claim in JWT token")
+        }
 
         // 권한 문자열을 분리하여 SimpleGrantedAuthority로 변환
-        val authorities: Collection<GrantedAuthority> = (auth as String)
-            .split(",")
-            .map { SimpleGrantedAuthority(it) }
+        val authorities: Collection<GrantedAuthority> = auth
+            .takeIf { it.isNotBlank() }
+            ?.split(",")
+            ?.filter { it.isNotBlank() }
+            ?.map { SimpleGrantedAuthority(it) }
+            ?: throw RuntimeException("Invalid or empty 'auth' claim in JWT token")
 
         // UserDetails 객체 생성
-        val principal: UserDetails = User(claims.subject, "", authorities)
+        val principal: UserDetails = CustomUser(userId.toLong(), claims.subject, "", authorities)
 
         // UsernamePasswordAuthenticationToken을 사용하여 Authentication 객체 반환
         return UsernamePasswordAuthenticationToken(principal, "", authorities)

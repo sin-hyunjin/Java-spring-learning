@@ -1,11 +1,13 @@
 package com.example.demo.member.controller
 import com.example.demo.common.authority.TokenInfo
 import com.example.demo.common.dto.BaseResponse
+import com.example.demo.common.dto.CustomUser
 import com.example.demo.member.dto.LoginDto
 import com.example.demo.member.dto.MemberDtoRequest
 import com.example.demo.member.dto.MemberDtoResponse
 import com.example.demo.member.service.MemberService
 import jakarta.validation.Valid
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 
 @RequestMapping("/api/member")
@@ -32,9 +34,27 @@ class MemberController(
     /**
      * 정보 보기
      */
-    @GetMapping("/info/{id}")
-    fun searchMyInfo(@PathVariable id: Long): BaseResponse<MemberDtoResponse> {
-        val response = memberService.searchMyInfo(id)
+    @GetMapping("/info")
+    fun searchMyInfo(): BaseResponse<MemberDtoResponse> {
+        var userId = (SecurityContextHolder.getContext().authentication.principal as CustomUser).userId
+        val response = memberService.searchMyInfo(userId)
         return BaseResponse(data = response)
+    }
+
+    /**
+     * 내 정보 저장
+     */
+    @PutMapping("/info")
+    fun saveMyInfo(@RequestBody @Valid memberDtoRequest: MemberDtoRequest):
+            BaseResponse<Unit> {
+        val userId = (SecurityContextHolder
+            .getContext()
+            .authentication
+            .principal as CustomUser)
+            .userId
+        memberDtoRequest.id = userId
+        val resultMsg: String = memberService.saveMyInfo(memberDtoRequest)
+
+        return BaseResponse(message = resultMsg)
     }
 }
