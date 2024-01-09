@@ -342,3 +342,54 @@ POST /api/member/signup
   - entity : 회원정보 관련 ENtity
   - repository : 회원정보 관련
   - service : 비즈니스 로직 
+
+
+## 1. validation 추가하기 
+### 1.1 build.gradle.kts > dependencies에 의존성 추가 
+
+> implementation("org.springframework.boot:spring-boot-starter-validation")
+
+- validation을 사용하기 위해 Maven Repository 에서 spring validation 검색 후 추가 
+   
+### 1.2 Enum 체크할 Validator 생성
+
+```java
+package com.example.auth.common.annotation
+import jakarta.validation.Constraint
+import jakarta.validation.ConstraintValidator
+import jakarta.validation.ConstraintValidatorContext
+import jakarta.validation.Payload
+import kotlin.reflect.KClass
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
+@Constraint(validatedBy = [ValidEnumValidator::class])
+annotation class ValidEnum(
+    val message: String = "Invalid enum value",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = [],
+    val enumClass: KClass<out Enum<*>>
+)
+class ValidEnumValidator : ConstraintValidator<ValidEnum, Any> {
+    private lateinit var enumValues: Array<out Enum<*>>
+    override fun initialize(annotation: ValidEnum) {
+        enumValues = annotation.enumClass.java.enumConstants
+}
+    override fun isValid(
+        value: Any?,
+        context: ConstraintValidatorContext): Boolean {
+        if (value == null) {
+            return true
+        }
+        return enumValues.any { it.name == value.toString() }
+  }
+}
+
+```
+
+- @Target : 어노테이션이 지정되어 사용할 종류를 정의
+- @Retention : 어노테이션을 컴파일된 클래스 파일에 저장할 것인지 런타임에 반영할 것인지 정의
+   - SOURCE: binary 파일로 명시되지 않음
+   - BINARY: binary 파일에는 명시되지만 reflection 에는 명시되지 않음
+   - RUNTIME: binary 파일과 reflection 둘다 명시
+- @MustBeDocumente : API 일부분으로 문서화하기 위해 사용 

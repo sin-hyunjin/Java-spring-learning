@@ -29,6 +29,11 @@ dependencies {
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+	testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.1")
+	implementation("jakarta.validation:jakarta.validation-api:3.0.0") // Use the latest version available
+
+
 }
 
 // allopen = plugin에서 추가로 open 해줄 것들
