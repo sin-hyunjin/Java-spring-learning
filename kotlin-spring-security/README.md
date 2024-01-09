@@ -17,7 +17,9 @@
   - [Spring Security](#spring-security)
   - [JWT ](#jwt-)
   - [JwtToken 만들기 ](#jwttoken-만들기-)
-- [4. 로그인 기능 만들기]()
+- [4. 로그인 기능 만들기](#4-로그인-기능-만들기-)
+  - [4.1 회원가입시 권한 부여 ](#41-회원가입시-권한-부여-)
+  - [4.2. 로그인 후 Token 발행 ](#42-로그인-후-token-발행-)
 - [5. 내 정보 변경 기능 만들기]()
 
 # 1. Kotlin
@@ -679,4 +681,284 @@ runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 ```java
 jwt:
   secret: DadFufN4Oui8Bfv3ScFj6R9fyJ9hD45E6AGFsXgFsRhT4YSdSb
+```
+
+### 3. 패키지 생성 
+
+- com.example.demo.common : 공통적으로 사용할 수 있는 기능 분류 
+  - authority : 권한 관련 기능 분류
+  - service : CustomUserDetailsServie 생성
+
+### 4. Token 정보 담을 data class 생성 
+
+```java
+package com.example.demo.common.authority
+
+data class TokenInfo (
+    //grantType : JWT권한 인증 타입  (ex. Bearer) accessToken :
+    val grantType: String,
+    // 실제 검증할때 확인할 토큰
+    val accessToken: String,
+
+)
+```
+
+### 5. JwtTokenProvider 생성
+
+```java
+package com.example.demo.common.authority
+
+import io.jsonwebtoken.*
+import io.jsonwebtoken.io.Decoders
+import io.jsonwebtoken.security.Keys
+import io.jsonwebtoken.security.SecurityException
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.stereotype.Component
+import java.util.*
+
+// 토큰 만료 시간 상수
+const val EXPIRATION_MILLISECONDS: Long = 1000 * 60 * 60 * 12
+
+@Component
+class JwtTokenProvider {
+    // application.properties에서 주입되는 비밀 키
+    @Value("\${jwt.secret}")
+    lateinit var secretKey: String
+
+    // 비밀 키를 Base64 디코딩한 값으로 초기화
+    private val key by lazy {
+        Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey))
+    }
+
+    /**
+     * 사용자 인증 정보를 기반으로 JWT 토큰을 생성하는 메서드
+     */
+    fun createToken(authentication: Authentication): TokenInfo {
+        // 권한 정보를 쉼표로 구분하여 문자열로 변환
+        val authorities: String = authentication
+            .authorities
+            .joinToString(",", transform = GrantedAuthority::getAuthority)
+
+        val now = Date()
+        val accessExpiration = Date(now.time + EXPIRATION_MILLISECONDS)
+
+        // Access Token 생성
+        val accessToken = Jwts.builder()
+            .setSubject(authentication.name)
+            .claim("auth", authorities)
+            .setIssuedAt(now)
+            .setExpiration(accessExpiration)
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact()
+
+        return TokenInfo("Bearer", accessToken)
+    }
+
+    /**
+     * JWT 토큰에서 사용자 정보를 추출하여 인증 객체를 반환하는 메서드
+     */
+    fun getAuthentication(token: String): Authentication {
+        val claims: Claims = getClaims(token)
+        val auth = claims["auth"] ?: throw RuntimeException("Invalid JWT Token")
+
+        // 권한 문자열을 분리하여 SimpleGrantedAuthority로 변환
+        val authorities: Collection<GrantedAuthority> = (auth as String)
+            .split(",")
+            .map { SimpleGrantedAuthority(it) }
+
+        // UserDetails 객체 생성
+        val principal: UserDetails = User(claims.subject, "", authorities)
+
+        // UsernamePasswordAuthenticationToken을 사용하여 Authentication 객체 반환
+        return UsernamePasswordAuthenticationToken(principal, "", authorities)
+    }
+
+    /**
+     * JWT 토큰의 유효성을 검증하는 메서드
+     */
+    fun validateToken(token: String): Boolean {
+        try {
+            getClaims(token)
+            return true
+        } catch (e: Exception) {
+            // 발생한 예외에 따라 적절한 처리 수행
+            when (e) {
+                is SecurityException -> {}  // 유효하지 않은 JWT 토큰
+                is MalformedJwtException -> {}  // 유효하지 않은 JWT 토큰
+                is ExpiredJwtException -> {}    // 만료된 JWT 토큰
+                is UnsupportedJwtException -> {}
+                is IllegalArgumentException -> {}
+                else -> {}  // 기타 예외
+            }
+            println(e.message)
+        }
+        return false
+    }
+
+    // JWT 토큰에서 클레임(클레임을 포함한 부분)을 추출하는 메서드
+    private fun getClaims(token: String): Claims =
+        Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .body
+}
+
+```
+
+### 6. JwtAuthenticationFilter 생성 
+```java
+package com.example.demo.common.authority
+
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
+import jakarta.servlet.http.HttpServletRequest
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.util.StringUtils
+import org.springframework.web.filter.GenericFilterBean
+
+class JwtAuthenticationFilter(
+
+    /** JWT 토큰
+     *  JWT(Json Web Token)를 사용하여 Spring Security에서 인증된 사용자를 설정하는 필터 클래스
+     *  doFilter 메서드에서 HTTP 요청에서 토큰을 추출하고,
+     *  해당 토큰이 유효하면 Spring Security의 SecurityContextHolder에 사용자 정보를 설정
+     */
+    private val jwtTokenProvider: JwtTokenProvider
+) : GenericFilterBean() {
+    override fun doFilter(
+        request: ServletRequest?,
+        response: ServletResponse?,
+        chain: FilterChain?
+    ) {
+        val token = resolveToken(request as HttpServletRequest)
+
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            val authentication = jwtTokenProvider.getAuthentication(token)
+            SecurityContextHolder.getContext().authentication = authentication
+        }
+
+        chain?.doFilter(request, response)
+    }
+
+    // HTTP 요청에서 토큰을 추출하는 메서드
+    private fun resolveToken(request: HttpServletRequest): String? {
+        val bearerToken = request.getHeader("Authorization")
+        return if (StringUtils.hasText(bearerToken) &&
+            bearerToken.startsWith("Bearer")) {
+            bearerToken.substring(7)
+        } else {
+            null
+        }
+    }
+}
+
+```
+
+# 4. 로그인 기능 만들기 
+ - [4.1 회원가입시 권한 부여 ](#41-회원가입시-권한-부여-)
+ - [4.2. 로그인 후 Token 발행 ](#42-로그인-후-token-발행-)
+
+
+## 4.1 회원가입시 권한 부여 
+
+## 4.2. 로그인 후 Token 발행 
+
+### 0.요구 사항 
+**EndPoint**
+> post /api/member/login
+
+### 1. Login DTO 생성 
+
+```java
+data class LoginDto(
+    @field:NotBlank
+    @JsonProperty("loginId")
+    private val _loginId: String?,
+    @field:NotBlank
+    @JsonProperty("password")
+    private val _password: String?,
+){
+val loginId: String
+        get() = _loginId!!
+    val password: String
+        get() = _password!! 
+}
+```
+### 2. service에 로그인 기능 추가 
+```java
+@Transactional
+@Service
+class MemberService(
+    private val memberRepository: MemberRepository,
+    private val memberRoleRepository: MemberRoleRepository,
+    //
+    private val authenticationManagerBuilder: AuthenticationManagerBuilder,
+    private val jwtTokenProvider: JwtTokenProvider,
+    ){ ... 
+  /**
+ * 로그인 
+ */
+fun login(loginDto: LoginDto): TokenInfo {
+    val authenticationToken =
+            UsernamePasswordAuthenticationToken(loginDto.loginId, loginDto.password)
+    val authentication =
+            authenticationManagerBuilder.`object`.authenticate(authenticationToken)
+    return jwtTokenProvider.createToken(authentication)
+}
+```
+### 3. controller에 로그인 EndPoint 추가
+```java
+@PostMapping("/login")
+fun login(@RequestBody @Valid loginDto: LoginDto): BaseResponse<TokenInfo> {
+    val tokenInfo = memberService.login(loginDto)
+    return BaseResponse(data = tokenInfo)
+}
+```
+### 4. CustomUserDetailsService 생성
+```java
+package com.example.auth.common.service
+import com.example.auth.member.entity.Member
+import com.example.auth.member.repository.MemberRepository
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
+@Service
+class CustomUserDetailsService(
+    private val memberRepository: MemberRepository,
+    private val passwordEncoder: PasswordEncoder,
+    ) : UserDetailsService {
+  override fun loadUserByUsername(username: String): UserDetails =
+          memberRepository.findByLoginId(username)
+                  ?.let { createUserDetails(it) }
+?: throw UsernameNotFoundException(" .")
+  private fun createUserDetails(member: Member): UserDetails =
+          User(
+                  member.loginId,
+                  passwordEncoder.encode(member.password),
+                  member.memberRole!!.map { SimpleGrantedAuthority("ROLE_${it.role}") }
+          ) }
+```
+### 5. 로그인 실패시 Exception 처리 추가 
+```java
+@ExceptionHandler(BadCredentialsException::class)
+protected fun badCredentialsException(ex: BadCredentialsException):
+ResponseEntity<BaseResponse<Map<String, String>>> {
+val errors = mapOf(" " to " .") return ResponseEntity(BaseResponse(
+}
+    ResultCode.ERROR.name,
+    errors,
+    ResultCode.ERROR.msg
+), HttpStatus.BAD_REQUEST)
 ```
