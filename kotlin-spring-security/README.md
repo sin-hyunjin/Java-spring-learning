@@ -244,3 +244,101 @@ BLUE
 }
 ```
 상수들을 모아놓은 집합
+
+# 회원가입 기능 만들기 
+
+## application.yml 셋팅 
+
+```java
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/study
+    username: root
+    password: coavldjs3372!@
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        highlight_sql: true
+logging:
+  pattern:
+    console: "[%d{HH:mm:ss.SSS}][%-5level][%logger.%method:line%line] - %msg%n"
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type.descriptor.sql: trace
+
+
+```
+
+### server : 서버 관련 설정 
+- server.port : 서버 포트(default. 8080)
+- server.servlet.encoding.charset : HTTP 요청과 응답의 문자 집합
+- server.servlet.encoding.enabled : HTTP 인코딩 지원 여부
+- server.servlet.encoding.force : HTTP 요쳥과 응답에서 문자 집합에 인코딩을 강제할지 여부 
+
+## spring.datasource : Database 접속 정보
+
+## spring.jpa : jpa 설정 정보 
+
+- spring.jpa.open-in-view : true일 경우 영속성 컨텍스트가 트랜잭션 범위를 넘어선 레이어까지 유지 
+- spring.jpa.hibernate.ddl-auto
+  - create : 기존테이블 삭제후 다시생성 ( DRAP + CREATE)
+  - create-drop : create와 같으나 종료시점에 테이블 DROP
+  - create update : 변경분만 반영(운영DB에서는 사용해서는 안됨)
+  - validate : 엔티티와 테이블 정상 매핑되었는지만 확인(운영DB)
+  - none: 사용하지 않음
+
+- spring.jpa.properties.hibernate.show_sql: System.out에 sql 로그출력
+- spring.jpa.properties.hibernate.format_sql : sql을 보기좋게 줄맞춤
+- spring.jpa.properties.hibernate.highlight_sql : sql 색상 표시추가 
+
+## logging: 로그에 관한 정보
+- logging.pattern.console : 기본 로그 형태 지정
+- logging.level.org.hibernate.SQL : logger 에 sql로그 출력(권장)
+- logging.level.org.hibernate.type.descriptor.sql : trace로 하면 sql에 바인딩 되는 값을 확인
+
+# 회원가입 기능 만들기
+
+## 0. 요구사항 
+
+### ENPOINT 
+
+```java
+POST /api/member/signup
+```
+
+### 회원가입시 입력받을 정보 
+
+![img.png](img%2Fimg.png)
+
+### 패키지 정의 
+
+![img_1.png](img%2Fimg_1.png)
+
+
+- com.example.demo.common : 
+   - annotation : 사용자 생성 어노테이션
+   - dto : 어플리케이션 전반에 공통적으로 사용할 수 있는 DTO
+   - exception : exception cjfl
+   - status : 어플리케이션 상태관리 
+- com.example.demo.member : 회원정보 관련 기능 분류
+  - controller : Request 를 받을 End Point
+  - dto : 회원정보 관련 DTO
+  - entity : 회원정보 관련 ENtity
+  - repository : 회원정보 관련
+  - service : 비즈니스 로직 
