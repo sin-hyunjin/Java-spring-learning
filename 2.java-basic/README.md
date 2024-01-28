@@ -33,6 +33,11 @@
   - [배열 도입 - 리펙토링](#배열-도입---리펙토링)
     - [배열에 참조값을 대입한 이후 최종 그림](#배열에-참조값을-대입한-이후-최종-그림)
   - [정리](#정리-1)
+- [2. 기본형과 참조형](#2-기본형과-참조형)
+  - [기본형 vs 참조형1 - 시작](#기본형-vs-참조형1---시작)
+  - [기본형 vs 참조형2 - 변수 대입](#기본형-vs-참조형2---변수-대입)
+  - [메서드에 객체 전달](#메서드에-객체-전달)
+    - [createStudent() 메서드 호출 분석](#createstudent-메서드-호출-분석)
 
 # 1. 클래스와 데이터
 
@@ -291,3 +296,183 @@ public class ClassStart4 {
 -
 
 ## 정리
+
+- **클래스에 정의한 변수들을 멤버 변수, 또는 필드**라 한다.
+
+  - **멤버 변수(Member Variable)**: 이 변수들은 특정 클래스에 소속된 멤버이기 때문에 이렇게 부른다.
+  - **필드(Field)**: 데이터 항목을 가리키는 전통적인 용어이다. 데이터베이스, 엑셀 등에서 데이터 각각의 항목을 필드 라 한다.
+  - 자바에서 멤버 변수, 필드는 같은 뜻이다. 클래스에 소속된 변수를 뜻한다.
+
+- **자바에서 대입은 항상 변수에 들어 있는 값을 복사해서 전달한다.**
+
+- new 를 쓰면 새로운 메모리가 생성되는 것 이다.
+
+# 2. 기본형과 참조형
+
+## 기본형 vs 참조형1 - 시작
+
+- 기본형(Primitive Type): int , long , double , boolean 처럼 변수에 사용할 값을 직접 넣을 수 있는 데이
+  터 타입을 기본형이라 한다.
+- 참조형(Reference Type): Student student1 , int[] students 와 같이 데이터에 접근하기 위한 참조
+  (주소)를 저장하는 데이터 타입을 참조형이라 한다. 참조형은 객체 또는 배열에 사용된다
+
+**기본형 vs 참조형 - 기본**
+
+- 참조형은 실제 사용하는 값을 변수에 담는 것이 아니다. 이름 그대로 실제 객체의 위치(참조, 주소)를 저장한다. 참
+  조형에는 객체와 배열이 있다
+
+      - 객체는 . (dot)을 통해서 메모리 상에 생성된 객체를 찾아가야 사용할 수 있다.
+      - 배열은 [] 를 통해서 메모리 상에 생성된 배열을 찾아가야 사용할 수 있다.
+
+**기본형 vs 참조형 - 계산**
+
+기본형은 연산이 가능하지만 참조형은 연산이 불가능하다.
+
+```java
+int a = 10, b = 20;
+int sum = a + b;
+```
+
+기본형은 변수에 실제 사용하는 값이 담겨있다. 따라서 + , - 와 같은 연산이 가능하다.
+
+```java
+Student s1 = new Student();
+Student s2 = new Student();
+s1 + s2 //오류 발생
+```
+
+참조형은 변수에 객체의 위치인 참조값이 들어있다. 참조값은 계산에 사용할 수 없다. 따라서 오류가 발생한다.
+
+**쉽게 이해하는 팁**
+
+- 기본형을 제외한 나머지는 모두 참조형이다.
+  - 기본형은 소문자로 시작한다. int , long , double , boolean 모두 소문자로 시작한다.
+    - 기본형은 자바가 기본으로 제공하는 데이터 타입이다. 이러한 기본형은 개발자가 새로 정의할 수 없다. 개발자는 참조형인 클래스만 직접 정의할 수 있다.
+- 클래스는 대문자로 시작한다. Student
+  - 클래스는 모두 참조형이다.
+
+**참고 - String**
+String 은 사실은 클래스다. 따라서 참조형이다. 그런데 기본형처럼 문자 값을 바로
+대입할 수 있다.
+
+## 기본형 vs 참조형2 - 변수 대입
+
+**대원칙: 자바는 항상 변수의 값을 복사해서 대입한다.**
+
+**기본형 대입**
+
+```java
+int a = 10;
+int b = a;
+```
+
+**참조형 대입**
+
+```java
+Student s1 = new Student();
+Student s2 = s1;
+```
+
+기본형은 변수에 값을 대입하더라도 실제 사용하는 값이 변수에 바로 들어있기 때문에 해당 값만 복사해서 대입한다고
+생각하면 쉽게 이해할 수 있다. 그런데 **참조형의 경우 실제 사용하는 객체가 아니라 객체의 위치를 가리키는 참조값만
+복사**된다. 쉽게 이야기해서 실제 건물이 복사가 되는 것이 아니라 건물의 위치인 주소만 복사되는 것이다. 따라서 같은
+건물을 찾아갈 수 있는 방법이 하나 늘어날 뿐이다.
+
+**기본형과 참조형의 메서드 호출**
+자바에서 메서드의 매개변수(파라미터)는 항상 값에 의해 전달된다. 그러나 이 값이 실제 값이냐, 참조(메모리 주소)값
+이냐에 따라 동작이 달라진다.
+
+- **기본형**: 메서드로 기본형 데이터를 전달하면, 해당 값이 복사되어 전달된다. 이 경우, 메서드 내부에서 매개변수
+  (파라미터)의 값을 변경해도, 호출자의 변수 값에는 영향이 없다.
+- **참조형:** 메서드로 참조형 데이터를 전달하면, 참조값이 복사되어 전달된다. 이 경우, 메서드 내부에서 매개변수(파
+  라미터)로 전달된 객체의 멤버 변수를 변경하면, 호출자의 객체도 변경된다.
+
+## 메서드에 객체 전달
+
+```java
+package ref;
+
+public class Method1 {
+
+    public static void main(String[] args) {
+        Student student1 = new Student();
+        initStudent(student1, "학생1", 15, 90);
+//        student1.name = "학생1";
+//        student1.grade = 15;
+//        student1.age = 90;
+
+        Student student2 = new Student();
+        initStudent(student1, "학생2", 16, 80);
+
+        printStudent(student1);
+        printStudent(student2);
+
+    }
+
+    static void initStudent(Student student, String name, int age, int grade) {
+        student.name = name;
+        student.age = age;
+        student.grade = grade;
+    }
+
+    static void printStudent(Student student1) {
+        System.out.println("이름:" + student1.name + " 나이:" + student1.age + " 성적:" + student1.grade);
+    }
+}
+
+
+```
+
+참조형은 메서드를 호출할 때 참조값을 전달한다. 따라서 메서드 내부에서 전달된 참조값을 통해 객체의 값을 변경하거
+나, 값을 읽어서 사용할 수 있다
+
+- `initStudent(Student student, ...) `: 전달한 학생 객체의 필드에 값을 설정한다.
+- `printStudent(Student student, ...) ` : 전달한 학생 객체의 필드 값을 읽어서 출력한다.
+- ![![Alt text](image.png)](img/method.png)
+
+- 이 메서드를 호출하면서 student1 을 전달한다. 그러면 student1 의 참조값이 매개변수 student 에 전달된
+  다. 이 참조값을 통해 initStudent() 메서드 안에서 student1 이 참조하는 것과 동일한 x001 Student
+  인스턴스에 접근하고 값을 변경할 수 있다.
+
+### createStudent() 메서드 호출 분석
+
+```java
+package ref;
+
+public class Method2 {
+
+    public static void main(String[] args) {
+        // 1. createStudent 메서드 호출
+        Student student1 = createStudent("학생1", 15, 90); //
+        Student student2 =createStudent("학생2", 16, 80);
+
+        printStudent(student1);
+        printStudent(student2);
+    }
+
+    static Student createStudent(String name, int age, int grade) {
+        // 2. 인스턴스 생성, 초기값 설정
+        // 모든 객체를 만든후 참조값을 반환
+        Student student = new Student();
+        student.name = name;
+        student.age = age;
+        student.grade = grade;
+        // 3. 메서드 반환
+        return student;
+    }
+
+    static void printStudent(Student student1) {
+        System.out.println("이름:" + student1.name + " 나이:" + student1.age + " 성적:" + student1.grade);
+    }
+}
+
+```
+
+**진행과정**
+
+```java
+Student student1 = createStudent("학생1", 15, 90) //메서드 호출후 결과 반환
+Student student1 = student(x001) //참조형인 student를 반환
+Student student1 = x001 //student의 참조값 대입
+student1 = x001
+```
