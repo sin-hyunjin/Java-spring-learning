@@ -48,6 +48,10 @@
   - [정리](#정리-2)
     - [객체 지향 프로그래밍 vs 절차 지향 프로그래밍](#객체-지향-프로그래밍-vs-절차-지향-프로그래밍)
     - [객체란?](#객체란)
+- [4. 생성자](#4-생성자)
+  - [생성자 - 필요한 이유](#생성자---필요한-이유)
+  - [this](#this)
+    - [this의 생략](#this의-생략)
 
 # 1. 클래스와 데이터
 
@@ -651,3 +655,97 @@ null 에 . (dot)을 찍었을 때 발생한다.
 객체 지향 프로그래밍은 모든 사물을 속성과 기능을 가진 객체로 생각하는 것이다. 객체에는 속성과 기능만 존재한다. 이렇게 단순화하면 세상에 있는 객체들을 컴퓨터 프로그램으로 쉽게 설계할 수 있다.
 이런 장점들 덕분에 지금은 객체 지향 프로그래밍이 가장 많이 사용된다.
 참고로 실세계와 객체가 항상 1:1로 매칭되는 것은 아니다.
+
+# 4. 생성자
+
+### 생성자 - 필요한 이유
+
+객체를 생성하는 시점에 어떤 작업을 하고 싶다면 생성자(Constructor)를 이용하면 된다.
+생성자를 알아보기 전에 먼저 생성자가 왜 필요한지 코드로 간단히 알아보자.
+
+**MemberInit**
+
+```java
+ package construct;
+ public class MemberInit {
+     String name;
+int age;
+int grade; }
+```
+
+**MethodInitMain1**
+
+```java
+package construct;
+ public class MethodInitMain1 {
+     public static void main(String[] args) {
+         MemberInit member1 = new MemberInit();
+         member1.name = "user1";
+         member1.age = 15;
+         member1.grade = 90;
+         MemberInit member2 = new MemberInit();
+         member2.name = "user2";
+          member2.age = 16;
+         member2.grade = 80;
+         MemberInit[] members = {member1, member2};
+         for (MemberInit s : members) {
+System.out.println("이름:" + s.name + " 나이:" + s.age + " 성적:" + }
+} }
+```
+
+회원 객체를 생성하고 나면 `name` , `age` , `grade` 같은 변수에 초기값을 설정한다. 아마도 회원 객체를 제대로 사용하 기 위해서는 객체를 생성하자 마자 이런 초기값을 설정해야 할 것이다. 이 코드에는 회원의 초기값을 설정하는 부분이 계속 반복된다. 메서드를 사용해서 반복을 제거해보자.
+
+```java
+package construct;
+ public class MethodInitMain2 {
+     public static void main(String[] args) {
+         MemberInit member1 = new MemberInit();
+         initMember(member1, "user1", 15, 90);
+         MemberInit member2 = new MemberInit();
+         initMember(member2, "user2", 16, 80);
+         MemberInit[] members = {member1, member2};
+         for (MemberInit s : members) {
+System.out.println("이름:" + s.name + " 나이:" + s.age + " 성적:" + }
+     static void initMember(MemberInit member, String name, int age, int grade) {
+         member.name = name;
+           member.age = age;
+         member.grade = grade;
+     }
+}
+```
+
+`initMember(...)` 메서드를 사용해서 반복을 제거했다. 그런데 이 메서드는 대부분 `MemberInit` 객체의 멤버 변 수를 사용한다. 우리는 앞서 객체 지향에 대해서 학습했다. 이런 경우 속성과 기능을 한 곳에 두는 것이 더 나은 방법이 다. 쉽게 이야기해서 `MemberInit` 이 자기 자신의 데이터를 변경하는 기능(메서드)을 제공하는 것이 좋다.
+
+## this
+
+```java
+this.name = name; //1. 오른쪽의 name은 매개변수에 접근
+this.name = "user"; //2. name 매개변수의 값 사용
+x001.name = "user"; //3. this.은 인스턴스 자신의 참조값을 뜻함, 따라서 인스턴스의 멤버 변수에 접
+근
+```
+
+정리\*\*
+
+- 매개변수의 이름과 맴버 변수의 이름이 같은 경우 `this` 를 사용해서 둘을 명확하게 구분해야 한다.
+- `this` 는 인스턴스 자신을 가리킨다.
+
+### this의 생략
+
+`this` 는 생략할 수 있다. 이 경우 변수를 찾을 때 가까운 지역변수(매개변수도 지역변수다)를 먼저 찾고 없으면 그 다음
+으로 멤버 변수를 찾는다. 멤버 변수도 없으면 오류가 발생한다.
+
+```java
+ package construct;
+ public class MemberThis {
+     String nameField;
+     void initMember(String nameParameter) {
+         nameField = nameParameter;
+} }
+
+```
+
+- `nameField` 는 먼저 지역변수(매개변수)에서 같은 이름이 있는지 찾는다. 이 경우 없으므로 맴버 변수에서 찾는
+  다.
+- `nameParameter` 는 먼저 지역변수(매개변수)에서 같은 이름이 있는지 찾는다. 이 경우 매개변수가 있으므로 매
+  개변수를 사용한다.
