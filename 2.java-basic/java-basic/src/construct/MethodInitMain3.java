@@ -2,7 +2,8 @@ package construct;
 
 public class MethodInitMain3 {
     public static void main(String[] args) {
-        MemberInit member1 = new MemberInit();
+
+        MemberInit member1 = new MemberInit(); // 기본 생성자 생성자가 하나라도 있으면 자바는 기본 생성자를 만들지 않는다.
         member1.initMember( "user1", 15, 90);
 
         MemberInit member2 = new MemberInit();
