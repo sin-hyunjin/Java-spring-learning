@@ -38,6 +38,9 @@
   - [기본형 vs 참조형2 - 변수 대입](#기본형-vs-참조형2---변수-대입)
   - [메서드에 객체 전달](#메서드에-객체-전달)
     - [createStudent() 메서드 호출 분석](#createstudent-메서드-호출-분석)
+  - [변수와 초기화](#변수와-초기화)
+    - [변수의 종류](#변수의-종류)
+  - [Null](#null)
 
 # 1. 클래스와 데이터
 
@@ -476,3 +479,55 @@ Student student1 = student(x001) //참조형인 student를 반환
 Student student1 = x001 //student의 참조값 대입
 student1 = x001
 ```
+
+## 변수와 초기화
+
+#### 변수의 종류
+
+- 멤버 변수(필드) : 클래스에 선언
+- 지역 변수 : 메서드에 선언, 매개변수도 지역 변수의 한 종류이다.
+
+**멤버 변수, 필드 예시**
+
+```java
+public class Student {
+ String name;
+ int age;
+ int grade;
+}
+```
+
+name , age , grade 는 멤버 변수이다.
+
+**지역 변수 예시**
+
+```java
+public class ClassStart3 {
+ public static void main(String[] args) {
+ Student student1;
+ student1 = new Student();
+ Student student2 = new Student();
+ }
+}
+```
+
+```java
+public class MethodChange1 {
+ public static void main(String[] args) {
+ int a = 10;
+ System.out.println("메서드 호출 전: a = " + a);
+ changePrimitive(a);
+ System.out.println("메서드 호출 후: a = " + a);
+ }
+ public static void changePrimitive(int x) {
+ x = 20;
+ }
+}
+```
+
+a , x (매개변수)는 지역 변수이다.
+지역 변수는 이름 그대로 특정 지역에서만 사용되는 변수라는 뜻이다. 예를 들어서 변수 x 는 changePrimitive()
+메서드의 블록에서만 사용된다. changePrimitive() 메서드가 끝나면 제거된다. a 변수도 마찬가지이다.
+main() 메서드가 끝나면 제거된다.
+
+## Null

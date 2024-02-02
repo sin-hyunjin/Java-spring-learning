@@ -9,7 +9,9 @@ public class MethodChange1 {
         changePrimivice(a);
         System.out.println("메서드 호출 후 : a" + a);
     }
-    static void changePrimivice(int x) {
+    static int changePrimivice(int x) {
         x = 20; // 결과적으로 x값만 10으로 변환된것이다
+        System.out.println("x = " + x);
+        return x;
     }
 }
