@@ -19,3 +19,4 @@ public class ShopMain {
         System.out.println("상품 가격의 합: " + sum);
     }
 }
+
