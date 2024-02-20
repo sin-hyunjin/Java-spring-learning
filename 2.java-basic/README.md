@@ -95,6 +95,7 @@
     - [자바 언어](#자바-언어)
     - [객체의 협력이라는 관계부터 생각](#객체의-협력이라는-관계부터-생각)
   - [정리](#정리-4)
+  - [OCP(Open-Closed Principle) 원칙](#ocpopen-closed-principle-원칙)
 
 # 1. 클래스와 데이터
 
@@ -1652,3 +1653,10 @@ public class DiamondMain {
 - 다형성이 가장 중요하다!
 - 디자인 패턴 대부분은 다형성을 활용하는 것이다.
 - 스프링의 핵심인 제어의 역전(loc), 의존관계 주입(DI)도 결국 다형성을 활용하는 것이다.
+
+## OCP(Open-Closed Principle) 원칙
+
+좋은 객체 지향 설계 원칙 중 하나로 OCP 원칙이라는 것이 있다.
+
+- **Open for extension**: 새로운 기능의 추가나 변경 사항이 생겼을 때, 기존 코드는 확장할 수 있어야 한다.
+- **Closed for modification**: 기존의 코드는 수정되지 않아야 한다.
