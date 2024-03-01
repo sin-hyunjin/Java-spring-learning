@@ -6,9 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
-import org.springframework.data.annotation.CreatedDate;
-
-
+import org.hibernate.annotations.CreationTimestamp;
 import java.sql.Timestamp;
 
 @Entity
@@ -23,6 +21,6 @@ public class User {
     private String email;
     private String role; // ROLE_USER, ROLE_ADMIN
 
-    @CreatedDate
+    @CreationTimestamp // java.sql
     private Timestamp createData;
 }
