@@ -21,6 +21,8 @@ public class User {
     private String email;
     private String role; // ROLE_USER, ROLE_ADMIN
 
+    private String provider; // google
+    private String providerId; // sub=107072109731784464688
     @CreationTimestamp // java.sql
     private Timestamp createData;
 }
