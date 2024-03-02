@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class WebMvcConfig implements WebMvcConfigurer {
+public class WebMvcConfig implements WebMvcConfigurer{
 
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
@@ -16,7 +16,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolver.setContentType("text/html; charset=UTF-8");
         resolver.setSuffix(".html");
         resolver.setPrefix("classpath:/templates/");
-
         registry.viewResolver(resolver);
     }
 

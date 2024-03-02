@@ -50,6 +50,12 @@ public class SecurityConfig {
 //                                .usernameParameter("email")
                                 .defaultSuccessUrl("/") // 로그인이 성공되면 메인페이지로 이동
                 );
+        http
+                .oauth2Login((oauth2) ->
+                        oauth2
+                                .loginPage("/loginForm") // 구글 로그인이 완료된 뒤의 후처리가 필요
+                );
+
 
         return http.build();
     }

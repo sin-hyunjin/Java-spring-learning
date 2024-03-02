@@ -25,3 +25,14 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google: # /oauth2/authorization/google 이 주소를 동작하게 한다.
+            client-id: 576784999918-0p0rk9edj0rbodrgpik070eq8jh6ob6r.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
