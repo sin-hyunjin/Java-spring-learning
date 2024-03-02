@@ -3,6 +3,9 @@ package com.cos.security1.controller;
 import com.cos.security1.model.User;
 import com.cos.security1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -60,4 +63,15 @@ public class IndexController {
         return "redirect:/loginForm"; // redirect:/ = 다음 함수를 호출해준다
     }
 
+    @Secured("ROLE_ADMIN") // SecurityConfig에서 Global로 걸어도 되지만 특정 한개의 함수를 ROLE_ADMIN만 접근가능하게 설정하고싶다면 적용
+    @GetMapping("/info")
+    public @ResponseBody String info() {
+        return "개인정보";
+    }
+
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')") // 여러개의 접근권한을 설정하고 싶다면
+    @GetMapping("/data")
+    public @ResponseBody String data() {
+        return "데이터 정보";
+    }
 }
