@@ -1,12 +1,17 @@
 package com.cos.security1.controller;
 
+import com.cos.security1.auth.PrincipalDetails;
 import com.cos.security1.model.User;
 import com.cos.security1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +22,27 @@ public class IndexController {
     private UserRepository userRepository;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @GetMapping("/test/login")
+    public @ResponseBody String testLogin(Authentication authentication,  // DI(의존성 주입)
+                                          @AuthenticationPrincipal PrincipalDetails userDetails ) { // 세션 접근가능
+        System.out.println("/test/login ========================= ");
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        System.out.println("authentication = " + principalDetails.getUser());
+        System.out.println("userDetails = " + userDetails.getUser());
+        return "세션 정보 확인하기";
+    }
+
+    @GetMapping("/test/oauth/login")
+    public @ResponseBody String testOAuthLogin(Authentication authentication, // DI(의존성 주입)
+                                        @AuthenticationPrincipal OAuth2User oauth) { // 세션 접근가능
+        System.out.println("/test/oauth/login ========================= ");
+        // 다운 캐스팅
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        System.out.println("authentication = " + oAuth2User.getAttributes());
+        System.out.println("oauth.getAttributes() = " + oauth.getAttributes());
+        return " OAuth 세션 정보 확인하기";
+    }
 
     @GetMapping({"","/"}) // { localhost:8080/ ,  Localhost:8080 }
     public String index() {

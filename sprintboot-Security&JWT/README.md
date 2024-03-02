@@ -179,3 +179,11 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
   - OAUTH 라이브러리를 쓰면 주소는 고정이다
   - contoller 주소는 따로 필요없다
+
+## Authentication 객체가 가질수 있는 2가지 타입
+
+![alt text](image-4.png)
+
+- 1.SecuritySession 안에 Authentication 있음
+- 2.UserDetails로 로그인시 일반로그인 , OAuth2User로 로그인시 OAuth로 로그인
+-
