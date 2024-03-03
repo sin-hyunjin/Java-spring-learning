@@ -36,3 +36,10 @@ spring:
             scope:
               - email
               - profile
+
+          facebook: # /oauth2/authorization/google 이 주소를 동작하게 한다.
+            client-id: 935742634371344
+            client-secret: 21103cc24133d06b4ccce71ab5ba7985
+            scope:
+              - email
+              - public_profile
