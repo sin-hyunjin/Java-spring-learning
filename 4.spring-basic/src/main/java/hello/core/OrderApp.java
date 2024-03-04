@@ -11,8 +11,9 @@ import hello.core.order.OrderServiceImpl;
 /** mainMethod로 테스트하는건 별로 안좋다. Jnit으로 테스트하자 */
 public class OrderApp {
     public static void main(String[] args) {
-        MemberService memberService = new MemberServiceImpl();
-        OrderService orderService = new OrderServiceImpl();
+        AppConfig appConfig = new AppConfig();
+        MemberService memberService = appConfig.memberService();
+        OrderService orderService = appConfig.orderService();
 
         long memberId = 1L;
         Member member = new Member(memberId, "memberA", Grade.VIP);
