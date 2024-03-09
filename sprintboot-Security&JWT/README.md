@@ -165,24 +165,24 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 ### 2. 프로젝트 생성
 
-![alt text](image.png)
+![alt text](img/image.png)
 
 ### 3.OAuth 동의 화면 설정
 
 ### 4. 사용자 인증 정보 접속
 
 - 사용자 인증 정보 만들기
-  ![alt text](image-2.png)
+  ![alt text](img/image-2.png)
 
 - oauth 클라이언트 ID 만들기
-  ![alt text](image-3.png)
+  ![alt text](img/image-3.png)
 
   - OAUTH 라이브러리를 쓰면 주소는 고정이다
   - contoller 주소는 따로 필요없다
 
 ## Authentication 객체가 가질수 있는 2가지 타입
 
-![alt text](image-4.png)
+![alt text](img/image-4.png)
 
 - 1.SecuritySession 안에 Authentication 있음
 - 2.UserDetails로 로그인시 일반로그인 , OAuth2User로 로그인시 OAuth로 로그인

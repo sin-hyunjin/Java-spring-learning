@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
-
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     @Autowired
     private UserRepository userRepository;
@@ -53,9 +51,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         String providerId = oAuth2UserInfo.getProviderId();
         String username = provider + "_" + providerId; // google_1095812382138
         String password = bCryptPasswordEncoder.encode("겟인데어");
-        String email = oAuth2UserInfo.getEmial();
+        String email = oAuth2UserInfo.getEmail();
         String role = "ROLE_USER";
-
         User userEntity = userRepository.findByUsername(username);
 
         if(userEntity == null) {

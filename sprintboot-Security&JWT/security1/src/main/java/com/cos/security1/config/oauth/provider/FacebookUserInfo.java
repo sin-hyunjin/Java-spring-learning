@@ -18,7 +18,7 @@ public class FacebookUserInfo implements OAuth2UserInfo{
         return "facebook";
     }
     @Override
-    public String getEmial() {
+    public String getEmail() {
         return (String) attributes.get("email");
     }
 
