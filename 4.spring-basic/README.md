@@ -21,11 +21,15 @@
 
 **클린코드로 유명한 로버트 마틴이 좋은 객체 지향 설계의 5가지 원칙을 정리**
 
+
 - SRP: 단일 책임 원칙(single responsibility principle)
+  - **한 클래스는 하나의 책임만 가져야 한다.**
 - OCP: 개방-폐쇄 원칙 (Open/closed principle)
+  - **소프트웨어 요소는 확장에는 열려 있으나 변경에는 닫혀 있어야 한다**
 - LSP: 리스코프 치환 원칙 (Liskov substitution principle)
 - ISP: 인터페이스 분리 원칙 (Interface segregation principle)
 - DIP: 의존관계 역전 원칙 (Dependency inversion principle)
+  - **프로그래머는 “추상화에 의존해야지, 구체화에 의존하면 안된다.” 의존성 주입은 이 원칙을 따르는 방법 중 하나다.**
 
 ## 스프링
 
